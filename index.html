@@ -3,30 +3,17 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - 3 Day View</title>
+<title>Ford Shift Scheduler - Compact</title>
 
 <style>
-    /* --- FORD BRANDING CONSTANTS --- */
-    :root {
-        --ford-blue: #003478;
-        --ford-light-blue: #eef4ff;
-        --ford-gray-bg: #f2f2f2;
-        --ford-text-dark: #1a1a1a;
-        --ford-text-med: #555555;
-        --ford-success: #2e7d32;
-        --ford-warning: #fca311;
-        --ford-danger: #d32f2f;
-    }
-
     /* GLOBAL RESET & FONTS */
     * { box-sizing: border-box; }
 
     body {
-        font-family: "Ford Antenna Cond", "Ford Antenna", Helvetica Neue, Helvetica, Arial, sans-serif;
-        background: var(--ford-gray-bg);
-        padding: 10px;
+        font-family: "Ford Antenna", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f0f2f5;
+        padding: 8px; /* Very tight outer padding */
         margin: 0;
-        color: var(--ford-text-dark);
     }
 
     /* WIDGET CONTAINER */
@@ -35,254 +22,220 @@
         max-width: 480px;
         margin: 0 auto;
         background: #ffffff;
-        border-radius: 4px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        overflow: hidden; 
+        border-radius: 6px;
+        padding: 10px; /* Reduced padding */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-top: 4px solid #003478; /* Thinner top border */
+        overflow: visible; 
     }
 
-    /* --- FORD BRAND HEADER --- */
-    .ford-header-bar {
-        background-color: var(--ford-blue);
-        color: white;
-        padding: 12px 15px;
+    /* COMPACT HEADER ROW */
+    .header-row {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-    }
-
-    .brand-area {
-        display: flex;
         align-items: center;
+        margin-bottom: 10px;
     }
 
-    .ford-logo {
-        height: 22px; 
-        width: auto;
-        margin-right: 12px;
-    }
-
-    .app-title {
+    h2 {
+        margin: 0;
+        text-align: left;
+        color: #003478;
         font-weight: 700;
-        font-size: 16px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
+        font-size: 16px; /* Smaller title */
+        letter-spacing: -0.5px;
     }
-
-    /* COMPACT DATE NAV */
-    .date-sub-header {
-        background: #e0e0e0;
-        padding: 8px 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    
+    .header-date {
+        font-size: 12px;
+        color: #666;
         font-weight: 600;
-        color: var(--ford-blue);
-        font-size: 13px;
-        border-bottom: 1px solid #ccc;
     }
-    .nav-arrow { font-size: 18px; cursor: pointer; padding: 0 10px; user-select: none;}
 
-    .widget-body { padding: 12px; }
-
-    /* TABS */
+    /* TABS - SLIM */
     .tabs {
         display: flex;
-        border-bottom: 2px solid #e0e0e0;
-        margin-bottom: 15px;
+        background: #f0f2f5;
+        border-radius: 4px;
+        padding: 2px;
+        margin-bottom: 10px;
     }
     .tab {
         flex: 1;
         text-align: center;
-        padding: 10px 5px;
-        font-size: 13px;
+        padding: 6px;
+        font-size: 12px;
         font-weight: 600;
-        color: var(--ford-text-med);
+        color: #666;
         cursor: pointer;
+        border-radius: 4px;
         transition: all 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 3px solid transparent; 
     }
     .tab.active {
-        color: var(--ford-blue);
-        border-bottom: 3px solid var(--ford-blue);
-        background: linear-gradient(to top, #eef4ff 0%, #fff 100%);
+        background: #fff;
+        color: #003478;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* WEEK DAYS ROW */
+    /* WEEK DAYS - COMPACT */
     .week-days {
         display: flex;
         justify-content: space-between;
-        gap: 4px;
-        margin-bottom: 12px;
-        font-size: 11px;
-        color: var(--ford-text-med);
+        gap: 2px;
+        margin-bottom: 10px;
+        font-size: 10px;
+        color: #666;
     }
+
     .week-days div {
         flex: 1;
         text-align: center;
-        padding: 8px 0;
-        border-radius: 2px;
-        background: #f0f0f0;
+        padding: 4px 0; /* Slimmer boxes */
+        border-radius: 4px;
+        background: #f9f9f9;
         cursor: pointer;
-        border: 1px solid #ddd;
     }
+
     .week-days .active {
-        background: var(--ford-blue);
+        background: #003478;
         color: white;
-        font-weight: 700;
-        border-color: var(--ford-blue);
+        font-weight: 600;
     }
 
     /* SUMMARY ROW */
     .summary {
         display: flex;
         justify-content: space-between;
-        background: var(--ford-light-blue);
-        padding: 8px 12px;
-        border-radius: 2px;
-        margin-bottom: 15px;
+        background: #eef4ff;
+        padding: 6px 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
         font-size: 12px;
-        font-weight: 700;
-        color: var(--ford-blue);
-        border-left: 4px solid var(--ford-blue);
+        font-weight: 600;
+        color: #003478;
+        border: 1px solid #dae7ff;
     }
 
-    /* DAY LABEL */
     .day-label {
         font-weight: 700;
-        color: var(--ford-text-dark);
-        font-size: 13px;
-        margin-bottom: 6px;
-        margin-top: 15px; /* Spacing between cards */
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-transform: uppercase;
+        color: #333;
+        font-size: 12px;
+        margin-bottom: 4px;
+        margin-top: 8px;
     }
-    .day-label:first-child { margin-top: 0; }
+    .day-label:first-of-type { margin-top: 0; }
 
-    /* SHIFT CARD */
+    /* SHIFT CARD STYLING - COMPACT */
     .shift-card {
         background: white;
-        padding: 12px;
-        border-radius: 2px;
-        border: 1px solid #d0d0d0;
-        border-left: 5px solid var(--ford-blue);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 10px; /* Reduced internal padding */
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        border-left: 4px solid #003478;
+        margin-bottom: 8px; /* Tighter spacing between cards */
+        position: relative;
     }
 
-    .shift-card.pickup-card { border-left-color: var(--ford-success); margin-bottom: 10px;}
-    .shift-card.pending-state { 
-        background-color: #fffdf5; 
-        border-left-color: var(--ford-warning); 
+    .shift-card.pickup-card { border-left: 4px solid #2e7d32; }
+
+    .shift-card.pending-state {
+        background-color: #fffdf5;
+        border-left-color: #fca311;
     }
 
     .shift-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
 
     .shift-time {
-        font-size: 16px;
+        font-size: 15px; /* Smaller time font */
         font-weight: 700;
-        color: var(--ford-text-dark);
+        color: #111;
     }
 
     .shift-role {
         font-size: 13px;
         font-weight: 600;
-        color: var(--ford-blue);
-        margin-bottom: 4px;
+        color: #003478;
+        margin-bottom: 2px;
     }
 
     .shift-location {
-        font-size: 12px;
-        color: var(--ford-text-med);
-        margin-bottom: 8px;
+        font-size: 11px;
+        color: #555;
         display: flex;
         align-items: center;
+        gap: 4px;
     }
-    .icon-loc { margin-right: 4px; color: var(--ford-blue); }
 
     .shift-meta {
         font-size: 11px;
         color: #777;
-        padding-top: 8px;
+        margin-top: 6px;
+        padding-top: 6px;
         border-top: 1px solid #f0f0f0;
         display: flex;
         justify-content: space-between;
-        font-weight: 500;
-        text-transform: uppercase;
     }
     
-    .offered-by { color: var(--ford-success); font-weight: 700; }
+    .offered-by { color: #2e7d32; font-weight: bold; }
+
+    /* BADGES */
+    .badge, .pickup-badge {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
     
-    /* WARNING TEXT */
+    .badge { display: none; background: #fca311; color: #000; }
+    .shift-card.pending-state .badge { display: inline-block; }
+    
+    .pickup-badge { background: #e8f5e9; color: #1b5e20; }
+
     .warning-text {
         display: none;
-        font-size: 11px;
-        color: var(--ford-danger);
-        margin-top: 8px;
-        font-weight: 600;
+        font-size: 10px;
+        color: #d32f2f;
+        margin-top: 4px;
         font-style: italic;
     }
+    .shift-card.pending-state .warning-text { display: block; }
 
-    /* ACTION BUTTONS */
+    /* BUTTONS - SLIM */
     .action-btn {
-        margin-top: 12px;
-        padding: 10px;
+        margin-top: 8px;
+        padding: 8px; /* Slimmer buttons */
         font-size: 13px;
-        font-weight: 700;
-        border-radius: 2px;
+        font-weight: 600;
+        border-radius: 4px;
         cursor: pointer;
         width: 100%;
         text-align: center;
-        border: 1px solid transparent;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.2s;
     }
 
-    .btn-request {
-        background: white;
-        color: var(--ford-blue);
-        border: 2px solid var(--ford-blue);
-    }
-    .btn-request:hover { background: var(--ford-blue); color: white; }
-
-    .btn-claim {
-        background: var(--ford-success);
-        color: white;
-    }
-    .btn-claim:hover { background: #1b5e20; }
-
-    .btn-cancel {
-        display: none;
-        background: white;
-        color: var(--ford-danger);
-        border: 2px solid var(--ford-danger);
-    }
+    .btn-request { background: white; color: #003478; border: 1px solid #003478; }
+    .btn-claim { background: #2e7d32; color: white; border: none; }
+    .btn-cancel { display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; }
 
     .shift-card.pending-state .btn-request { display: none; }
     .shift-card.pending-state .btn-cancel { display: block; }
-    
-    .badge { display:none; background:var(--ford-warning); color:#000; font-size:10px; padding:3px 6px; border-radius:2px; text-transform:uppercase; font-weight:700;}
-    .shift-card.pending-state .badge { display:inline-block; }
-    .pickup-badge { background:var(--ford-success); color:white; font-size:10px; padding:3px 6px; border-radius:2px; font-weight:700; text-transform:uppercase;}
 
     /* MODAL & TOAST */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 20px;}
-    .modal-content { background: white; padding: 24px; width: 100%; max-width: 350px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    select { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 2px; font-family: inherit;}
-    .modal-btn { background: var(--ford-blue); color: white; border: none; width: 100%; padding: 14px; border-radius: 2px; cursor: pointer; font-weight: bold; text-transform: uppercase;}
-    
-    #toast { visibility: hidden; min-width: 250px; background-color: var(--ford-blue); color: #fff; text-align: center; border-radius: 2px; padding: 14px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight:600; opacity: 0; transition: opacity 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 20px; z-index: 2000; }
+    .modal-content { background: white; padding: 20px; width: 100%; max-width: 350px; border-radius: 8px; }
+    .close { float: right; cursor: pointer; font-size: 20px; color: #999; }
+    select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;}
+    .modal-btn { background: #003478; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+    #toast { visibility: hidden; min-width: 200px; background-color: #2e7d32; color: #fff; text-align: center; border-radius: 4px; padding: 12px; position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); z-index: 3000; font-size: 13px; opacity: 0; transition: opacity 0.3s; }
     #toast.show { visibility: visible; opacity: 1; }
 </style>
 </head>
@@ -291,137 +244,129 @@
 
 <div class="widget">
 
-    <div class="ford-header-bar">
-        <div class="brand-area">
-            <img src="https://www.ford.com/etc/designs/ford-v-3/clientlibs_base/images/ford-oval-white.svg" alt="Ford Logo" class="ford-logo">
-            <span class="app-title">Crew Schedule</span>
-        </div>
+    <div class="header-row">
+        <h2>Crew Scheduler</h2>
+        <div class="header-date">Nov 24 – Nov 30 <span style="margin-left:5px; color:#003478; font-size:14px; cursor:pointer;">&rsaquo;</span></div>
     </div>
 
-    <div class="date-sub-header">
-        <span class="nav-arrow">&lsaquo;</span>
-        <span>Nov 24 – Nov 30</span>
-        <span class="nav-arrow">&rsaquo;</span>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
+        <div class="tab" onclick="switchTab('open-pickups')">Pickups (2)</div>
     </div>
 
-    <div class="widget-body">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
-            <div class="tab" onclick="switchTab('open-pickups')">Pickups (2)</div>
+    <div id="my-shifts" class="tab-content active">
+        
+        <div class="week-days">
+            <div>Mo<br>24</div>
+            <div class="active">Tu<br>25</div>
+            <div>We<br>26</div>
+            <div>Th<br>27</div>
+            <div>Fr<br>28</div>
+            <div>Sa<br>29</div>
+            <div>Su<br>30</div>
         </div>
 
-        <div id="my-shifts" class="tab-content active">
-            
-            <div class="week-days">
-                <div>Mo<br>24</div>
-                <div class="active">Tu<br>25</div>
-                <div>We<br>26</div>
-                <div>Th<br>27</div>
-                <div>Fr<br>28</div>
-                <div>Sa<br>29</div>
-                <div>Su<br>30</div>
-            </div>
-
-            <div class="summary">
-                <span>Est. Pay: $920</span>
-                <span>Hours: 30.0</span>
-            </div>
-
-            <div class="day-label">Tue, Nov 25</div>
-            <div class="shift-card" id="card-1">
-                <div class="shift-header">
-                    <div class="shift-time">06:00 – 16:30</div>
-                    <span class="badge">Swap Pending</span>
-                </div>
-                <div class="shift-role">Trim Assembly - Station 14</div>
-                <div class="shift-location"><span class="icon-loc">📍</span> Zone C, Dearborn Truck Plant</div>
-                <div class="shift-meta">
-                    <span>Shift #1 (A Crew)</span>
-                    <span>10 hrs</span>
-                </div>
-                <div class="warning-text" id="warning-card-1">⚠️ Pending Swap Approval</div>
-                <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25 | 06:00')">Request Swap</button>
-                <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
-            </div>
-
-            <div class="day-label">Wed, Nov 26</div>
-            <div class="shift-card" id="card-2">
-                <div class="shift-header">
-                    <div class="shift-time">06:00 – 16:30</div>
-                    <span class="badge">Swap Pending</span>
-                </div>
-                <div class="shift-role">Chassis Marriage - Line 2</div>
-                <div class="shift-location"><span class="icon-loc">📍</span> Zone B, Dearborn Truck Plant</div>
-                <div class="shift-meta">
-                    <span>Shift #1 (A Crew)</span>
-                    <span>10 hrs</span>
-                </div>
-                <div class="warning-text" id="warning-card-2">⚠️ Pending Swap Approval</div>
-                <button class="action-btn btn-request" onclick="openSwapModal('card-2', 'Wed, Nov 26 | 06:00')">Request Swap</button>
-                <button class="action-btn btn-cancel" onclick="cancelSwap('card-2')">Cancel Request</button>
-            </div>
-
-            <div class="day-label">Thu, Nov 27</div>
-            <div class="shift-card" id="card-3">
-                <div class="shift-header">
-                    <div class="shift-time">06:00 – 16:30</div>
-                    <span class="badge">Swap Pending</span>
-                </div>
-                <div class="shift-role">Quality Inspection - EOL</div>
-                <div class="shift-location"><span class="icon-loc">📍</span> Final Bay, Dearborn Truck Plant</div>
-                <div class="shift-meta">
-                    <span>Shift #1 (A Crew)</span>
-                    <span>10 hrs</span>
-                </div>
-                <div class="warning-text" id="warning-card-3">⚠️ Pending Swap Approval</div>
-                <button class="action-btn btn-request" onclick="openSwapModal('card-3', 'Thu, Nov 27 | 06:00')">Request Swap</button>
-                <button class="action-btn btn-cancel" onclick="cancelSwap('card-3')">Cancel Request</button>
-            </div>
-
+        <div class="summary">
+            <span>Est. Pay: $920</span>
+            <span>Hours: 30.0</span>
         </div>
 
-        <div id="open-pickups" class="tab-content">
-            <div class="day-label">Wed, Nov 26</div>
-            <div class="shift-card pickup-card" id="pickup-1">
-                <div class="shift-header">
-                    <div class="shift-time">16:30 – 02:30</div>
-                    <span class="pickup-badge">Open</span>
-                </div>
-                <div class="shift-role">Paint Shop - Clear Coat</div>
-                <div class="shift-location"><span class="icon-loc">📍</span> Zone P, Dearborn Truck Plant</div>
-                <div class="shift-meta">
-                    <span class="offered-by">Offered By: M. Johnson</span>
-                    <span>10 hrs</span>
-                </div>
-                <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26 | 16:30', 'M. Johnson')">Claim Shift</button>
+        <div class="day-label">Tue, Nov 25</div>
+        <div class="shift-card" id="card-1">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 16:30</div>
+                <span class="badge">Swap Pending</span>
             </div>
-
-            <div class="day-label">Sat, Nov 29</div>
-            <div class="shift-card pickup-card" id="pickup-2">
-                <div class="shift-header">
-                    <div class="shift-time">06:00 – 14:00</div>
-                    <span class="pickup-badge">Open</span>
-                </div>
-                <div class="shift-role">Material Handling - Forklift</div>
-                 <div class="shift-location"><span class="icon-loc">📍</span> Zone A, Dearborn Truck Plant</div>
-                <div class="shift-meta">
-                    <span class="offered-by">Offered By: T. Smith</span>
-                    <span>8 hrs</span>
-                </div>
-                <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29 | 06:00', 'T. Smith')">Claim Shift</button>
+            <div class="shift-role">Trim Assembly - Station 14</div>
+            <div class="shift-location">📍 Zone C, Dearborn Truck Plant</div>
+            <div class="shift-meta">
+                <span>Shift #1 (A Crew)</span>
+                <span>10 hrs</span>
             </div>
+            <div class="warning-text" id="warning-card-1">⚠️ You are responsible for this shift.</div>
+            <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25')">Request Swap</button>
+            <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
         </div>
-    </div> 
+
+        <div class="day-label">Wed, Nov 26</div>
+        <div class="shift-card" id="card-2">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 16:30</div>
+                <span class="badge">Swap Pending</span>
+            </div>
+            <div class="shift-role">Chassis Marriage - Line 2</div>
+            <div class="shift-location">📍 Zone B, Dearborn Truck Plant</div>
+            <div class="shift-meta">
+                <span>Shift #1 (A Crew)</span>
+                <span>10 hrs</span>
+            </div>
+            <div class="warning-text" id="warning-card-2">⚠️ You are responsible for this shift.</div>
+            <button class="action-btn btn-request" onclick="openSwapModal('card-2', 'Wed, Nov 26')">Request Swap</button>
+            <button class="action-btn btn-cancel" onclick="cancelSwap('card-2')">Cancel Request</button>
+        </div>
+
+        <div class="day-label">Thu, Nov 27</div>
+        <div class="shift-card" id="card-3">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 16:30</div>
+                <span class="badge">Swap Pending</span>
+            </div>
+            <div class="shift-role">Quality Inspection - EOL</div>
+            <div class="shift-location">📍 Final Bay, Dearborn Truck Plant</div>
+            <div class="shift-meta">
+                <span>Shift #1 (A Crew)</span>
+                <span>10 hrs</span>
+            </div>
+            <div class="warning-text" id="warning-card-3">⚠️ You are responsible for this shift.</div>
+            <button class="action-btn btn-request" onclick="openSwapModal('card-3', 'Thu, Nov 27')">Request Swap</button>
+            <button class="action-btn btn-cancel" onclick="cancelSwap('card-3')">Cancel Request</button>
+        </div>
+
+    </div>
+
+    <div id="open-pickups" class="tab-content">
+        <div class="day-label">Wed, Nov 26</div>
+        <div class="shift-card pickup-card" id="pickup-1">
+            <div class="shift-header">
+                <div class="shift-time">16:30 – 02:30</div>
+                <span class="pickup-badge">Open</span>
+            </div>
+            <div class="shift-role">Paint Shop - Clear Coat</div>
+            <div class="shift-location">📍 Zone P, Dearborn Truck Plant</div>
+            <div class="shift-meta">
+                <span class="offered-by">By: M. Johnson</span>
+                <span>10 hrs</span>
+            </div>
+            <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26', 'M. Johnson')">Claim Shift</button>
+        </div>
+
+        <div class="day-label">Sat, Nov 29</div>
+        <div class="shift-card pickup-card" id="pickup-2">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 14:00</div>
+                <span class="pickup-badge">Open</span>
+            </div>
+            <div class="shift-role">Material Handling - Forklift</div>
+            <div class="shift-location">📍 Zone A, Dearborn Truck Plant</div>
+            <div class="shift-meta">
+                <span class="offered-by">By: T. Smith</span>
+                <span>8 hrs</span>
+            </div>
+            <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29', 'T. Smith')">Claim Shift</button>
+        </div>
+    </div>
 
 </div>
 
 <div id="toast">Request Sent!</div>
 <div id="swapModal" class="modal">
     <div class="modal-content">
-        <span style="float:right; cursor:pointer; font-size:24px; color:#999;" onclick="closeSwapModal()">&times;</span>
-        <h3 style="margin:0 0 15px 0; color:var(--ford-blue); text-transform:uppercase;">Swap Shift</h3>
-        <p style="font-size:13px; color:#555; margin-bottom:5px;">Select Colleague:</p>
-        <div style="font-size:14px; margin-bottom:15px; color:var(--ford-text-dark); font-weight:700; background:#f0f0f0; padding:8px; border-radius:2px;" id="selectedShiftText"></div>
+        <span class="close" onclick="closeSwapModal()">&times;</span>
+        <h3 style="color:#003478; margin-top:0; font-size:18px;">Swap Request</h3>
+        <div style="background:#f0f2f5; padding:8px; border-radius:4px; margin-bottom:15px; font-size:12px;">
+            <strong id="selectedShiftText"></strong>
+        </div>
+        <label style="font-weight:600; font-size:13px; display:block; margin-bottom:5px;">To Colleague:</label>
         <select id="colleague">
             <option value="J. Miller">J. Miller (Line 2)</option>
             <option value="K. Davis">K. Davis (Trim A)</option>
@@ -436,21 +381,25 @@ const MANAGER_ID = "692f4f89c355107da4929d3b";
 let activeCardId = null;   
 let chosenShiftName = "";
 
-// Initialize all 3 cards logic
+// 1. Initialize logic for 3 cards
 window.onload = function() {
     const cards = ['card-1', 'card-2', 'card-3'];
     cards.forEach(id => {
-        if(localStorage.getItem(id) === 'pending') {
-            setPendingState(id);
+        if (localStorage.getItem(id) === 'pending') {
+            const card = document.getElementById(id);
+            if(card) card.classList.add('pending-state');
         }
     });
 };
 
-function switchTab(id) {
-    document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    event.target.classList.add('active');
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    
+    const tabs = document.querySelectorAll('.tab');
+    if(tabId === 'my-shifts') tabs[0].classList.add('active');
+    else tabs[1].classList.add('active');
 }
 
 function openSwapModal(id, name) {
@@ -461,48 +410,49 @@ function openSwapModal(id, name) {
 }
 function closeSwapModal() { document.getElementById("swapModal").style.display = "none"; }
 
-function setPendingState(id) {
-    const card = document.getElementById(id);
-    if(card) {
-        card.classList.add('pending-state');
-        // Dynamically find the warning text div inside this card or by ID
-        const warning = document.getElementById(`warning-${id}`);
-        if(warning) warning.style.display = 'block';
-    }
-}
-
 async function sendSwapRequest() {
     const colleague = document.getElementById("colleague").value;
     closeSwapModal();
-    setPendingState(activeCardId);
-    localStorage.setItem(activeCardId, 'pending');
+
+    const card = document.getElementById(activeCardId);
+    if(card) {
+        card.classList.add("pending-state");
+        localStorage.setItem(activeCardId, 'pending');
+    }
+
     showToast(`Request sent to ${colleague}`);
-    sendNotification(`Swap Request: ${chosenShiftName} -> ${colleague}`);
+
+    // API Call
+    sendNotification(`Shift Swap Request: ${chosenShiftName} offered to ${colleague}`);
 }
 
 async function claimShift(id, info, owner) {
     const btn = document.querySelector(`#${id} .btn-claim`);
-    btn.innerText = "Pending Approval";
-    btn.disabled = true;
-    btn.style.background = "#999"; 
+    if(btn) {
+        btn.innerText = "Claim Pending";
+        btn.disabled = true;
+    }
     showToast("Claim sent!");
-    sendNotification(`Claim Request: User wants ${info} from ${owner}`);
+    sendNotification(`Shift Claim Request: User wants to pick up ${info} from ${owner}`);
 }
 
 function cancelSwap(id) {
-    document.getElementById(id).classList.remove('pending-state');
-    const warning = document.getElementById(`warning-${id}`);
-    if(warning) warning.style.display = 'none';
-    
-    localStorage.removeItem(id);
-    showToast("Cancelled");
+    const card = document.getElementById(id);
+    if(card) {
+        card.classList.remove("pending-state");
+        localStorage.removeItem(id);
+        showToast("Request Cancelled", "error"); // Use "error" style for red bg
+    }
 }
 
-function showToast(msg) {
+function showToast(msg, type='success') {
     const t = document.getElementById("toast");
     t.innerText = msg;
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 3000);
+    t.className = "show";
+    if(type === 'error') t.style.backgroundColor = "#d32f2f";
+    else t.style.backgroundColor = "#2e7d32";
+    
+    setTimeout(() => { t.className = ""; }, 3000);
 }
 
 async function sendNotification(text) {
