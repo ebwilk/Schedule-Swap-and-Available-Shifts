@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - Interactive</title>
+<title>Ford Shift Scheduler - Fully Interactive</title>
 
 <style>
     /* GLOBAL RESET */
@@ -93,12 +93,15 @@
     .day-box {
         flex: 1;
         text-align: center;
-        padding: 5px 0;
+        padding: 6px 0;
         border-radius: 3px;
         background: #f9f9f9;
         cursor: pointer;
         border: 1px solid #eee;
+        transition: all 0.2s ease;
     }
+    .day-box:hover { background: #eef4ff; }
+    
     .day-box.active {
         background: #003478;
         color: white;
@@ -131,6 +134,12 @@
         border-left: 3px solid #003478;
         margin-bottom: 6px; 
         min-height: 60px;
+        transition: background-color 0.5s;
+    }
+
+    /* Animation class for scroll highlighting */
+    .highlight-flash {
+        background-color: #e3f2fd !important;
     }
 
     .shift-card.pickup-card { border-left-color: #2e7d32; }
@@ -191,7 +200,10 @@
     }
 
     .btn-request { background: white; color: #003478; border: 1px solid #003478; }
+    .btn-request:hover { background: #003478; color: white; }
+
     .btn-claim { background: #2e7d32; color: white; border: none; }
+    
     .btn-cancel { display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; }
 
     .shift-card.pending-state .btn-request { display: none; }
@@ -245,7 +257,7 @@
             <span>Hours: 40.0</span>
         </div>
 
-        <div id="shifts-container">
+        <div id="shifts-container" style="max-height: 400px; overflow-y: auto;">
             </div>
     </div>
 
@@ -326,17 +338,55 @@ function renderSchedule() {
         let d = new Date(currentWeekStart);
         d.setDate(currentWeekStart.getDate() + i);
         
-        // Highlight logic (just highlighting Tuesday for demo, or today's index)
-        let activeClass = (i === 1) ? 'active' : ''; 
-        
+        // Generate ISO date key for matching (YYYY-MM-DD)
+        // Note: Using local time construction to avoid timezone jumps
+        const offset = d.getTimezoneOffset();
+        const localDate = new Date(d.getTime() - (offset*60*1000));
+        const dateKey = localDate.toISOString().split('T')[0];
+
         let div = document.createElement('div');
-        div.className = `day-box ${activeClass}`;
+        
+        // Default highlight Tuesday (just for the demo starting state)
+        if(i === 1 && currentWeekStart.getDate() === 24) div.className = 'day-box active';
+        else div.className = 'day-box';
+
         div.innerHTML = `${dayNames[i]}<br>${d.getDate()}`;
+        
+        // CLICK HANDLER: Highlight day + Scroll to Card
+        div.onclick = function() {
+            handleDayClick(this, dateKey);
+        };
+
         daysContainer.appendChild(div);
     }
 
-    // 3. Render Shift Cards (Dynamic Simulation)
+    // 3. Render Shift Cards
     renderShiftsForWeek(currentWeekStart);
+}
+
+// --- CLICK HANDLER FOR DAYS ---
+function handleDayClick(element, dateKey) {
+    // 1. Update Active State in UI
+    document.querySelectorAll('.day-box').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+
+    // 2. Find the card
+    const cardId = `shift-${dateKey}`;
+    const card = document.getElementById(cardId);
+
+    if (card) {
+        // 3. Smooth Scroll to Card
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // 4. Flash Effect
+        card.classList.add('highlight-flash');
+        setTimeout(() => {
+            card.classList.remove('highlight-flash');
+        }, 1000);
+    } else {
+        // 5. No shift feedback
+        showToast("No shift scheduled", "info");
+    }
 }
 
 // --- SHIFT GENERATION LOGIC ---
@@ -344,51 +394,43 @@ function renderShiftsForWeek(startDate) {
     const container = document.getElementById('shifts-container');
     container.innerHTML = '';
 
-    // Create a unique key for this week to allow persistent storage per week if we wanted,
-    // but here we just generate IDs based on the date so they are unique.
-    
-    // We will generate 3 shifts: Tue, Wed, Thu
-    // Shift 1: Tuesday
+    // Generate 3 shifts: Tue, Wed, Thu
+    // Using simple date math
     let date1 = new Date(startDate); date1.setDate(startDate.getDate() + 1); // Tue
-    let id1 = `shift-${date1.toISOString().split('T')[0]}`; // shift-2025-11-25
-    
-    // Shift 2: Wednesday
     let date2 = new Date(startDate); date2.setDate(startDate.getDate() + 2); // Wed
-    let id2 = `shift-${date2.toISOString().split('T')[0]}`;
-
-    // Shift 3: Thursday
     let date3 = new Date(startDate); date3.setDate(startDate.getDate() + 3); // Thu
-    let id3 = `shift-${date3.toISOString().split('T')[0]}`;
 
-    // Simulate Role Data (Static for Nov 24, Generic for others)
-    const isBaseWeek = (startDate.getMonth() === 10 && startDate.getDate() === 24);
-    
+    // Function to get YYYY-MM-DD local
+    const getISO = (d) => {
+        const offset = d.getTimezoneOffset();
+        return new Date(d.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    };
+
     const shifts = [
         {
-            id: id1,
+            id: `shift-${getISO(date1)}`,
             dateObj: date1,
             time: "06:00 – 16:30",
-            role: isBaseWeek ? "Trim Assembly - Stn 14" : "Standard Rotation - Line A",
-            meta: isBaseWeek ? "Zone C • 10h • A Crew" : "Zone A • 10h • A Crew"
+            role: "Trim Assembly - Stn 14",
+            meta: "Zone C • 10h • A Crew"
         },
         {
-            id: id2,
+            id: `shift-${getISO(date2)}`,
             dateObj: date2,
             time: "06:00 – 16:30",
-            role: isBaseWeek ? "Chassis Marriage - Line 2" : "Standard Rotation - Line A",
-            meta: isBaseWeek ? "Zone B • 10h • A Crew" : "Zone A • 10h • A Crew"
+            role: "Chassis Marriage - Line 2",
+            meta: "Zone B • 10h • A Crew"
         },
         {
-            id: id3,
+            id: `shift-${getISO(date3)}`,
             dateObj: date3,
             time: "06:00 – 16:30",
-            role: isBaseWeek ? "Quality Inspection - EOL" : "Standard Rotation - Line A",
-            meta: isBaseWeek ? "Final Bay • 10h • A Crew" : "Zone A • 10h • A Crew"
+            role: "Quality Inspection - EOL",
+            meta: "Final Bay • 10h • A Crew"
         }
     ];
 
     shifts.forEach(shift => {
-        // Check local storage for pending state
         const isPending = localStorage.getItem(shift.id) === 'pending';
         const pendingClass = isPending ? 'pending-state' : '';
         const dayName = shift.dateObj.toLocaleDateString('en-US', {weekday:'short'});
@@ -414,7 +456,6 @@ function renderShiftsForWeek(startDate) {
 
 // --- INTERACTION LOGIC ---
 function changeWeek(direction) {
-    // direction: -1 (prev) or 1 (next)
     currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
     renderSchedule();
 }
@@ -440,17 +481,11 @@ function closeSwapModal() { document.getElementById("swapModal").style.display =
 async function sendSwapRequest() {
     const colleague = document.getElementById("colleague").value;
     closeSwapModal();
-
-    // Mark as pending in UI
     const card = document.getElementById(activeCardId);
     if(card) card.classList.add("pending-state");
-    
-    // Save to LocalStorage so it persists when navigating dates
     localStorage.setItem(activeCardId, 'pending');
 
     showToast(`Request sent to ${colleague}`);
-    
-    // API Call
     sendNotification(`Swap Request: ${chosenShiftName} -> ${colleague}`);
 }
 
@@ -476,7 +511,11 @@ function showToast(msg, type='success') {
     const t = document.getElementById("toast");
     t.innerText = msg;
     t.className = "show";
-    t.style.backgroundColor = (type === 'error') ? "#d32f2f" : "#2e7d32";
+    
+    if(type === 'error') t.style.backgroundColor = "#d32f2f";
+    else if(type === 'info') t.style.backgroundColor = "#555";
+    else t.style.backgroundColor = "#2e7d32";
+    
     setTimeout(() => { t.className = ""; }, 3000);
 }
 
