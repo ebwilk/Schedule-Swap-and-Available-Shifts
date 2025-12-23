@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - Ultra Compact</title>
+<title>Ford Shift Scheduler - Interactive</title>
 
 <style>
     /* GLOBAL RESET */
@@ -28,20 +28,13 @@
         border-top: 4px solid #003478; 
     }
 
-    /* COMPACT HEADER */
-    .header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
     h2 {
-        margin: 0;
+        margin: 0 0 10px 0;
         color: #003478;
         font-weight: 700;
-        font-size: 15px; 
+        font-size: 16px; 
+        text-align: center;
     }
-    .date-nav { font-size: 11px; color: #666; font-weight: 600; cursor: pointer;}
 
     /* TABS */
     .tabs {
@@ -49,13 +42,13 @@
         background: #f0f2f5;
         border-radius: 4px;
         padding: 2px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     .tab {
         flex: 1;
         text-align: center;
-        padding: 5px;
-        font-size: 11px;
+        padding: 6px;
+        font-size: 12px;
         font-weight: 600;
         color: #666;
         cursor: pointer;
@@ -69,6 +62,50 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* NAV HEADER */
+    .nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #003478;
+        font-size: 14px;
+        user-select: none;
+    }
+    .nav-arrow { 
+        cursor: pointer; 
+        padding: 4px 12px; 
+        font-size: 18px; 
+        border-radius: 4px;
+    }
+    .nav-arrow:hover { background-color: #f0f2f5; }
+
+    /* WEEK DAYS ROW */
+    .week-days {
+        display: flex;
+        justify-content: space-between;
+        gap: 2px;
+        margin-bottom: 10px;
+        font-size: 10px;
+        color: #666;
+    }
+    .day-box {
+        flex: 1;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 3px;
+        background: #f9f9f9;
+        cursor: pointer;
+        border: 1px solid #eee;
+    }
+    .day-box.active {
+        background: #003478;
+        color: white;
+        font-weight: 600;
+        border-color: #003478;
+    }
+
     /* SUMMARY ROW */
     .summary {
         display: flex;
@@ -76,16 +113,16 @@
         background: #eef4ff;
         padding: 4px 8px;
         border-radius: 4px;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         font-size: 11px;
         font-weight: 600;
         color: #003478;
         border: 1px solid #dae7ff;
     }
 
-    /* ULTRA COMPACT SHIFT CARD */
+    /* SHIFT CARD (Horizontal) */
     .shift-card {
-        display: flex; /* Horizontal Layout */
+        display: flex; 
         align-items: center;
         background: white;
         padding: 8px; 
@@ -103,13 +140,8 @@
         border-left-color: #fca311;
     }
 
-    /* Left Side: Info */
-    .card-info {
-        flex: 1;
-        padding-right: 8px;
-    }
-
-    /* Right Side: Action */
+    .card-info { flex: 1; padding-right: 8px; }
+    
     .card-action {
         width: 70px;
         display: flex;
@@ -117,7 +149,6 @@
         justify-content: center;
     }
 
-    /* Typography */
     .shift-date {
         font-size: 10px;
         font-weight: 700;
@@ -145,7 +176,6 @@
         color: #777;
         margin-top: 1px;
     }
-    
     .offered-by { color: #2e7d32; font-weight: 600; }
 
     /* Buttons */
@@ -160,20 +190,10 @@
         text-transform: uppercase;
     }
 
-    .btn-request { 
-        background: white; color: #003478; border: 1px solid #003478; 
-    }
-    .btn-request:hover { background: #003478; color: white; }
+    .btn-request { background: white; color: #003478; border: 1px solid #003478; }
+    .btn-claim { background: #2e7d32; color: white; border: none; }
+    .btn-cancel { display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; }
 
-    .btn-claim { 
-        background: #2e7d32; color: white; border: none; 
-    }
-    
-    .btn-cancel { 
-        display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; 
-    }
-
-    /* Pending State Logic */
     .shift-card.pending-state .btn-request { display: none; }
     .shift-card.pending-state .btn-cancel { display: block; }
     
@@ -202,11 +222,7 @@
 <body>
 
 <div class="widget">
-
-    <div class="header-row">
-        <h2>Crew Scheduler</h2>
-        <div class="date-nav">&lsaquo; Nov 24–30 &rsaquo;</div>
-    </div>
+    <h2>Crew Scheduler</h2>
 
     <div class="tabs">
         <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
@@ -214,52 +230,23 @@
     </div>
 
     <div id="my-shifts" class="tab-content active">
+        
+        <div class="nav-header">
+            <span class="nav-arrow" onclick="changeWeek(-1)">&lsaquo;</span>
+            <span id="date-range-text">Nov 24 – Nov 30</span>
+            <span class="nav-arrow" onclick="changeWeek(1)">&rsaquo;</span>
+        </div>
+
+        <div class="week-days" id="week-days-container">
+            </div>
+
         <div class="summary">
             <span>Est. Pay: $920</span>
-            <span>Hours: 30.0</span>
+            <span>Hours: 40.0</span>
         </div>
 
-        <div class="shift-card" id="card-1">
-            <div class="card-info">
-                <div class="shift-date">Tue, Nov 25</div>
-                <div class="shift-time">06:00 – 16:30</div>
-                <div class="shift-role">Trim Assembly - Stn 14</div>
-                <div class="shift-meta">Zone C • 10h • A Crew</div>
+        <div id="shifts-container">
             </div>
-            <div class="card-action">
-                <div class="status-text">PENDING</div>
-                <button class="btn-compact btn-request" onclick="openSwapModal('card-1', 'Tue Nov 25')">Swap</button>
-                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-1')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="shift-card" id="card-2">
-            <div class="card-info">
-                <div class="shift-date">Wed, Nov 26</div>
-                <div class="shift-time">06:00 – 16:30</div>
-                <div class="shift-role">Chassis Marriage - Line 2</div>
-                <div class="shift-meta">Zone B • 10h • A Crew</div>
-            </div>
-            <div class="card-action">
-                <div class="status-text">PENDING</div>
-                <button class="btn-compact btn-request" onclick="openSwapModal('card-2', 'Wed Nov 26')">Swap</button>
-                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-2')">Cancel</button>
-            </div>
-        </div>
-
-        <div class="shift-card" id="card-3">
-            <div class="card-info">
-                <div class="shift-date">Thu, Nov 27</div>
-                <div class="shift-time">06:00 – 16:30</div>
-                <div class="shift-role">Quality Inspection - EOL</div>
-                <div class="shift-meta">Final Bay • 10h • A Crew</div>
-            </div>
-            <div class="card-action">
-                <div class="status-text">PENDING</div>
-                <button class="btn-compact btn-request" onclick="openSwapModal('card-3', 'Thu Nov 27')">Swap</button>
-                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-3')">Cancel</button>
-            </div>
-        </div>
     </div>
 
     <div id="open-pickups" class="tab-content">
@@ -274,7 +261,6 @@
                 <button class="btn-compact btn-claim" onclick="claimShift('pickup-1', 'Wed Nov 26', 'M. Johnson')">Claim</button>
             </div>
         </div>
-
         <div class="shift-card pickup-card" id="pickup-2">
             <div class="card-info">
                 <div class="shift-date">Sat, Nov 29</div>
@@ -287,7 +273,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <div id="toast">Request Sent!</div>
@@ -310,17 +295,129 @@
 
 <script>
 const MANAGER_ID = "692f4f89c355107da4929d3b";
+
+// --- STATE MANAGEMENT ---
+// Start date: Monday, Nov 24, 2025
+let currentWeekStart = new Date(2025, 10, 24); 
 let activeCardId = null;   
 let chosenShiftName = "";
 
+// --- INITIALIZATION ---
 window.onload = function() {
-    const cards = ['card-1', 'card-2', 'card-3'];
-    cards.forEach(id => {
-        if (localStorage.getItem(id) === 'pending') {
-            document.getElementById(id).classList.add('pending-state');
-        }
-    });
+    renderSchedule();
 };
+
+// --- CORE RENDER FUNCTION ---
+function renderSchedule() {
+    // 1. Update Header Text
+    const options = { month: 'short', day: 'numeric' };
+    const endOfWeek = new Date(currentWeekStart);
+    endOfWeek.setDate(currentWeekStart.getDate() + 6);
+    
+    document.getElementById('date-range-text').innerText = 
+        `${currentWeekStart.toLocaleDateString('en-US', options)} – ${endOfWeek.toLocaleDateString('en-US', options)}`;
+
+    // 2. Render Week Days Row
+    const daysContainer = document.getElementById('week-days-container');
+    daysContainer.innerHTML = '';
+    const dayNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    
+    for(let i=0; i<7; i++) {
+        let d = new Date(currentWeekStart);
+        d.setDate(currentWeekStart.getDate() + i);
+        
+        // Highlight logic (just highlighting Tuesday for demo, or today's index)
+        let activeClass = (i === 1) ? 'active' : ''; 
+        
+        let div = document.createElement('div');
+        div.className = `day-box ${activeClass}`;
+        div.innerHTML = `${dayNames[i]}<br>${d.getDate()}`;
+        daysContainer.appendChild(div);
+    }
+
+    // 3. Render Shift Cards (Dynamic Simulation)
+    renderShiftsForWeek(currentWeekStart);
+}
+
+// --- SHIFT GENERATION LOGIC ---
+function renderShiftsForWeek(startDate) {
+    const container = document.getElementById('shifts-container');
+    container.innerHTML = '';
+
+    // Create a unique key for this week to allow persistent storage per week if we wanted,
+    // but here we just generate IDs based on the date so they are unique.
+    
+    // We will generate 3 shifts: Tue, Wed, Thu
+    // Shift 1: Tuesday
+    let date1 = new Date(startDate); date1.setDate(startDate.getDate() + 1); // Tue
+    let id1 = `shift-${date1.toISOString().split('T')[0]}`; // shift-2025-11-25
+    
+    // Shift 2: Wednesday
+    let date2 = new Date(startDate); date2.setDate(startDate.getDate() + 2); // Wed
+    let id2 = `shift-${date2.toISOString().split('T')[0]}`;
+
+    // Shift 3: Thursday
+    let date3 = new Date(startDate); date3.setDate(startDate.getDate() + 3); // Thu
+    let id3 = `shift-${date3.toISOString().split('T')[0]}`;
+
+    // Simulate Role Data (Static for Nov 24, Generic for others)
+    const isBaseWeek = (startDate.getMonth() === 10 && startDate.getDate() === 24);
+    
+    const shifts = [
+        {
+            id: id1,
+            dateObj: date1,
+            time: "06:00 – 16:30",
+            role: isBaseWeek ? "Trim Assembly - Stn 14" : "Standard Rotation - Line A",
+            meta: isBaseWeek ? "Zone C • 10h • A Crew" : "Zone A • 10h • A Crew"
+        },
+        {
+            id: id2,
+            dateObj: date2,
+            time: "06:00 – 16:30",
+            role: isBaseWeek ? "Chassis Marriage - Line 2" : "Standard Rotation - Line A",
+            meta: isBaseWeek ? "Zone B • 10h • A Crew" : "Zone A • 10h • A Crew"
+        },
+        {
+            id: id3,
+            dateObj: date3,
+            time: "06:00 – 16:30",
+            role: isBaseWeek ? "Quality Inspection - EOL" : "Standard Rotation - Line A",
+            meta: isBaseWeek ? "Final Bay • 10h • A Crew" : "Zone A • 10h • A Crew"
+        }
+    ];
+
+    shifts.forEach(shift => {
+        // Check local storage for pending state
+        const isPending = localStorage.getItem(shift.id) === 'pending';
+        const pendingClass = isPending ? 'pending-state' : '';
+        const dayName = shift.dateObj.toLocaleDateString('en-US', {weekday:'short'});
+        const monthDay = shift.dateObj.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+
+        const html = `
+        <div class="shift-card ${pendingClass}" id="${shift.id}">
+            <div class="card-info">
+                <div class="shift-date">${dayName}, ${monthDay}</div>
+                <div class="shift-time">${shift.time}</div>
+                <div class="shift-role">${shift.role}</div>
+                <div class="shift-meta">${shift.meta}</div>
+            </div>
+            <div class="card-action">
+                <div class="status-text">PENDING</div>
+                <button class="btn-compact btn-request" onclick="openSwapModal('${shift.id}', '${dayName} ${monthDay}')">Swap</button>
+                <button class="btn-compact btn-cancel" onclick="cancelSwap('${shift.id}')">Cancel</button>
+            </div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+}
+
+// --- INTERACTION LOGIC ---
+function changeWeek(direction) {
+    // direction: -1 (prev) or 1 (next)
+    currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+    renderSchedule();
+}
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -344,11 +441,12 @@ async function sendSwapRequest() {
     const colleague = document.getElementById("colleague").value;
     closeSwapModal();
 
+    // Mark as pending in UI
     const card = document.getElementById(activeCardId);
-    if(card) {
-        card.classList.add("pending-state");
-        localStorage.setItem(activeCardId, 'pending');
-    }
+    if(card) card.classList.add("pending-state");
+    
+    // Save to LocalStorage so it persists when navigating dates
+    localStorage.setItem(activeCardId, 'pending');
 
     showToast(`Request sent to ${colleague}`);
     
@@ -369,19 +467,16 @@ async function claimShift(id, info, owner) {
 
 function cancelSwap(id) {
     const card = document.getElementById(id);
-    if(card) {
-        card.classList.remove("pending-state");
-        localStorage.removeItem(id);
-        showToast("Request Cancelled", "error");
-    }
+    if(card) card.classList.remove("pending-state");
+    localStorage.removeItem(id);
+    showToast("Request Cancelled", "error");
 }
 
 function showToast(msg, type='success') {
     const t = document.getElementById("toast");
     t.innerText = msg;
     t.className = "show";
-    if(type === 'error') t.style.backgroundColor = "#d32f2f";
-    else t.style.backgroundColor = "#2e7d32";
+    t.style.backgroundColor = (type === 'error') ? "#d32f2f" : "#2e7d32";
     setTimeout(() => { t.className = ""; }, 3000);
 }
 
