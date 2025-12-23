@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - Compact</title>
+<title>Ford Shift Scheduler - Ultra Compact</title>
 
 <style>
-    /* GLOBAL RESET & FONTS */
+    /* GLOBAL RESET */
     * { box-sizing: border-box; }
 
     body {
         font-family: "Ford Antenna", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background: #f0f2f5;
-        padding: 8px; /* Very tight outer padding */
+        padding: 8px; 
         margin: 0;
     }
 
@@ -23,219 +23,178 @@
         margin: 0 auto;
         background: #ffffff;
         border-radius: 6px;
-        padding: 10px; /* Reduced padding */
+        padding: 10px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-top: 4px solid #003478; /* Thinner top border */
-        overflow: visible; 
+        border-top: 4px solid #003478; 
     }
 
-    /* COMPACT HEADER ROW */
+    /* COMPACT HEADER */
     .header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
-
     h2 {
         margin: 0;
-        text-align: left;
         color: #003478;
         font-weight: 700;
-        font-size: 16px; /* Smaller title */
-        letter-spacing: -0.5px;
+        font-size: 15px; 
     }
-    
-    .header-date {
-        font-size: 12px;
-        color: #666;
-        font-weight: 600;
-    }
+    .date-nav { font-size: 11px; color: #666; font-weight: 600; cursor: pointer;}
 
-    /* TABS - SLIM */
+    /* TABS */
     .tabs {
         display: flex;
         background: #f0f2f5;
         border-radius: 4px;
         padding: 2px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     .tab {
         flex: 1;
         text-align: center;
-        padding: 6px;
-        font-size: 12px;
+        padding: 5px;
+        font-size: 11px;
         font-weight: 600;
         color: #666;
         cursor: pointer;
         border-radius: 4px;
-        transition: all 0.2s;
     }
     .tab.active {
         background: #fff;
         color: #003478;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
-    /* WEEK DAYS - COMPACT */
-    .week-days {
-        display: flex;
-        justify-content: space-between;
-        gap: 2px;
-        margin-bottom: 10px;
-        font-size: 10px;
-        color: #666;
-    }
-
-    .week-days div {
-        flex: 1;
-        text-align: center;
-        padding: 4px 0; /* Slimmer boxes */
-        border-radius: 4px;
-        background: #f9f9f9;
-        cursor: pointer;
-    }
-
-    .week-days .active {
-        background: #003478;
-        color: white;
-        font-weight: 600;
-    }
 
     /* SUMMARY ROW */
     .summary {
         display: flex;
         justify-content: space-between;
         background: #eef4ff;
-        padding: 6px 10px;
+        padding: 4px 8px;
         border-radius: 4px;
-        margin-bottom: 10px;
-        font-size: 12px;
+        margin-bottom: 8px;
+        font-size: 11px;
         font-weight: 600;
         color: #003478;
         border: 1px solid #dae7ff;
     }
 
-    .day-label {
-        font-weight: 700;
-        color: #333;
-        font-size: 12px;
-        margin-bottom: 4px;
-        margin-top: 8px;
-    }
-    .day-label:first-of-type { margin-top: 0; }
-
-    /* SHIFT CARD STYLING - COMPACT */
+    /* ULTRA COMPACT SHIFT CARD */
     .shift-card {
+        display: flex; /* Horizontal Layout */
+        align-items: center;
         background: white;
-        padding: 10px; /* Reduced internal padding */
+        padding: 8px; 
         border-radius: 4px;
         border: 1px solid #e0e0e0;
-        border-left: 4px solid #003478;
-        margin-bottom: 8px; /* Tighter spacing between cards */
-        position: relative;
+        border-left: 3px solid #003478;
+        margin-bottom: 6px; 
+        min-height: 60px;
     }
 
-    .shift-card.pickup-card { border-left: 4px solid #2e7d32; }
-
+    .shift-card.pickup-card { border-left-color: #2e7d32; }
+    
     .shift-card.pending-state {
         background-color: #fffdf5;
         border-left-color: #fca311;
     }
 
-    .shift-header {
+    /* Left Side: Info */
+    .card-info {
+        flex: 1;
+        padding-right: 8px;
+    }
+
+    /* Right Side: Action */
+    .card-action {
+        width: 70px;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 4px;
+        flex-direction: column;
+        justify-content: center;
     }
 
-    .shift-time {
-        font-size: 15px; /* Smaller time font */
+    /* Typography */
+    .shift-date {
+        font-size: 10px;
         font-weight: 700;
-        color: #111;
-    }
-
-    .shift-role {
-        font-size: 13px;
-        font-weight: 600;
         color: #003478;
+        text-transform: uppercase;
         margin-bottom: 2px;
     }
-
-    .shift-location {
-        font-size: 11px;
-        color: #555;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .shift-meta {
-        font-size: 11px;
-        color: #777;
-        margin-top: 6px;
-        padding-top: 6px;
-        border-top: 1px solid #f0f0f0;
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .offered-by { color: #2e7d32; font-weight: bold; }
-
-    /* BADGES */
-    .badge, .pickup-badge {
-        font-size: 9px;
+    .shift-time {
+        font-size: 14px;
         font-weight: 700;
-        text-transform: uppercase;
-        padding: 2px 5px;
-        border-radius: 4px;
+        color: #111;
+        line-height: 1.1;
     }
-    
-    .badge { display: none; background: #fca311; color: #000; }
-    .shift-card.pending-state .badge { display: inline-block; }
-    
-    .pickup-badge { background: #e8f5e9; color: #1b5e20; }
-
-    .warning-text {
-        display: none;
-        font-size: 10px;
-        color: #d32f2f;
-        margin-top: 4px;
-        font-style: italic;
-    }
-    .shift-card.pending-state .warning-text { display: block; }
-
-    /* BUTTONS - SLIM */
-    .action-btn {
-        margin-top: 8px;
-        padding: 8px; /* Slimmer buttons */
-        font-size: 13px;
+    .shift-role {
+        font-size: 11px;
         font-weight: 600;
-        border-radius: 4px;
+        color: #333;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .shift-meta {
+        font-size: 10px;
+        color: #777;
+        margin-top: 1px;
+    }
+    
+    .offered-by { color: #2e7d32; font-weight: 600; }
+
+    /* Buttons */
+    .btn-compact {
+        padding: 6px 4px;
+        font-size: 10px;
+        font-weight: 700;
+        border-radius: 3px;
         cursor: pointer;
         width: 100%;
         text-align: center;
+        text-transform: uppercase;
     }
 
-    .btn-request { background: white; color: #003478; border: 1px solid #003478; }
-    .btn-claim { background: #2e7d32; color: white; border: none; }
-    .btn-cancel { display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; }
+    .btn-request { 
+        background: white; color: #003478; border: 1px solid #003478; 
+    }
+    .btn-request:hover { background: #003478; color: white; }
 
+    .btn-claim { 
+        background: #2e7d32; color: white; border: none; 
+    }
+    
+    .btn-cancel { 
+        display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; 
+    }
+
+    /* Pending State Logic */
     .shift-card.pending-state .btn-request { display: none; }
     .shift-card.pending-state .btn-cancel { display: block; }
+    
+    .status-text {
+        display: none;
+        font-size: 9px;
+        color: #fca311;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+    .shift-card.pending-state .status-text { display: block; }
 
     /* MODAL & TOAST */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 20px; z-index: 2000; }
-    .modal-content { background: white; padding: 20px; width: 100%; max-width: 350px; border-radius: 8px; }
-    .close { float: right; cursor: pointer; font-size: 20px; color: #999; }
-    select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;}
-    .modal-btn { background: #003478; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .modal-content { background: white; padding: 15px; width: 100%; max-width: 320px; border-radius: 6px; }
+    select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin: 10px 0; font-size: 13px;}
+    .modal-btn { background: #003478; color: white; border: none; width: 100%; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .close { float: right; cursor: pointer; font-size: 18px; color: #999; }
 
-    #toast { visibility: hidden; min-width: 200px; background-color: #2e7d32; color: #fff; text-align: center; border-radius: 4px; padding: 12px; position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); z-index: 3000; font-size: 13px; opacity: 0; transition: opacity 0.3s; }
+    #toast { visibility: hidden; min-width: 200px; background-color: #2e7d32; color: #fff; text-align: center; border-radius: 4px; padding: 10px; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 3000; font-size: 12px; opacity: 0; transition: opacity 0.3s; }
     #toast.show { visibility: visible; opacity: 1; }
 </style>
 </head>
@@ -246,7 +205,7 @@
 
     <div class="header-row">
         <h2>Crew Scheduler</h2>
-        <div class="header-date">Nov 24 – Nov 30 <span style="margin-left:5px; color:#003478; font-size:14px; cursor:pointer;">&rsaquo;</span></div>
+        <div class="date-nav">&lsaquo; Nov 24–30 &rsaquo;</div>
     </div>
 
     <div class="tabs">
@@ -255,104 +214,77 @@
     </div>
 
     <div id="my-shifts" class="tab-content active">
-        
-        <div class="week-days">
-            <div>Mo<br>24</div>
-            <div class="active">Tu<br>25</div>
-            <div>We<br>26</div>
-            <div>Th<br>27</div>
-            <div>Fr<br>28</div>
-            <div>Sa<br>29</div>
-            <div>Su<br>30</div>
-        </div>
-
         <div class="summary">
             <span>Est. Pay: $920</span>
             <span>Hours: 30.0</span>
         </div>
 
-        <div class="day-label">Tue, Nov 25</div>
         <div class="shift-card" id="card-1">
-            <div class="shift-header">
+            <div class="card-info">
+                <div class="shift-date">Tue, Nov 25</div>
                 <div class="shift-time">06:00 – 16:30</div>
-                <span class="badge">Swap Pending</span>
+                <div class="shift-role">Trim Assembly - Stn 14</div>
+                <div class="shift-meta">Zone C • 10h • A Crew</div>
             </div>
-            <div class="shift-role">Trim Assembly - Station 14</div>
-            <div class="shift-location">📍 Zone C, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span>Shift #1 (A Crew)</span>
-                <span>10 hrs</span>
+            <div class="card-action">
+                <div class="status-text">PENDING</div>
+                <button class="btn-compact btn-request" onclick="openSwapModal('card-1', 'Tue Nov 25')">Swap</button>
+                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-1')">Cancel</button>
             </div>
-            <div class="warning-text" id="warning-card-1">⚠️ You are responsible for this shift.</div>
-            <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25')">Request Swap</button>
-            <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
         </div>
 
-        <div class="day-label">Wed, Nov 26</div>
         <div class="shift-card" id="card-2">
-            <div class="shift-header">
+            <div class="card-info">
+                <div class="shift-date">Wed, Nov 26</div>
                 <div class="shift-time">06:00 – 16:30</div>
-                <span class="badge">Swap Pending</span>
+                <div class="shift-role">Chassis Marriage - Line 2</div>
+                <div class="shift-meta">Zone B • 10h • A Crew</div>
             </div>
-            <div class="shift-role">Chassis Marriage - Line 2</div>
-            <div class="shift-location">📍 Zone B, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span>Shift #1 (A Crew)</span>
-                <span>10 hrs</span>
+            <div class="card-action">
+                <div class="status-text">PENDING</div>
+                <button class="btn-compact btn-request" onclick="openSwapModal('card-2', 'Wed Nov 26')">Swap</button>
+                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-2')">Cancel</button>
             </div>
-            <div class="warning-text" id="warning-card-2">⚠️ You are responsible for this shift.</div>
-            <button class="action-btn btn-request" onclick="openSwapModal('card-2', 'Wed, Nov 26')">Request Swap</button>
-            <button class="action-btn btn-cancel" onclick="cancelSwap('card-2')">Cancel Request</button>
         </div>
 
-        <div class="day-label">Thu, Nov 27</div>
         <div class="shift-card" id="card-3">
-            <div class="shift-header">
+            <div class="card-info">
+                <div class="shift-date">Thu, Nov 27</div>
                 <div class="shift-time">06:00 – 16:30</div>
-                <span class="badge">Swap Pending</span>
+                <div class="shift-role">Quality Inspection - EOL</div>
+                <div class="shift-meta">Final Bay • 10h • A Crew</div>
             </div>
-            <div class="shift-role">Quality Inspection - EOL</div>
-            <div class="shift-location">📍 Final Bay, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span>Shift #1 (A Crew)</span>
-                <span>10 hrs</span>
+            <div class="card-action">
+                <div class="status-text">PENDING</div>
+                <button class="btn-compact btn-request" onclick="openSwapModal('card-3', 'Thu Nov 27')">Swap</button>
+                <button class="btn-compact btn-cancel" onclick="cancelSwap('card-3')">Cancel</button>
             </div>
-            <div class="warning-text" id="warning-card-3">⚠️ You are responsible for this shift.</div>
-            <button class="action-btn btn-request" onclick="openSwapModal('card-3', 'Thu, Nov 27')">Request Swap</button>
-            <button class="action-btn btn-cancel" onclick="cancelSwap('card-3')">Cancel Request</button>
         </div>
-
     </div>
 
     <div id="open-pickups" class="tab-content">
-        <div class="day-label">Wed, Nov 26</div>
         <div class="shift-card pickup-card" id="pickup-1">
-            <div class="shift-header">
+            <div class="card-info">
+                <div class="shift-date">Wed, Nov 26</div>
                 <div class="shift-time">16:30 – 02:30</div>
-                <span class="pickup-badge">Open</span>
+                <div class="shift-role">Paint Shop - Clear Coat</div>
+                <div class="shift-meta"><span class="offered-by">By: M. Johnson</span> • 10h</div>
             </div>
-            <div class="shift-role">Paint Shop - Clear Coat</div>
-            <div class="shift-location">📍 Zone P, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span class="offered-by">By: M. Johnson</span>
-                <span>10 hrs</span>
+            <div class="card-action">
+                <button class="btn-compact btn-claim" onclick="claimShift('pickup-1', 'Wed Nov 26', 'M. Johnson')">Claim</button>
             </div>
-            <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26', 'M. Johnson')">Claim Shift</button>
         </div>
 
-        <div class="day-label">Sat, Nov 29</div>
         <div class="shift-card pickup-card" id="pickup-2">
-            <div class="shift-header">
+            <div class="card-info">
+                <div class="shift-date">Sat, Nov 29</div>
                 <div class="shift-time">06:00 – 14:00</div>
-                <span class="pickup-badge">Open</span>
+                <div class="shift-role">Material Handling</div>
+                <div class="shift-meta"><span class="offered-by">By: T. Smith</span> • 8h</div>
             </div>
-            <div class="shift-role">Material Handling - Forklift</div>
-            <div class="shift-location">📍 Zone A, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span class="offered-by">By: T. Smith</span>
-                <span>8 hrs</span>
+            <div class="card-action">
+                <button class="btn-compact btn-claim" onclick="claimShift('pickup-2', 'Sat Nov 29', 'T. Smith')">Claim</button>
             </div>
-            <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29', 'T. Smith')">Claim Shift</button>
         </div>
     </div>
 
@@ -362,11 +294,11 @@
 <div id="swapModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeSwapModal()">&times;</span>
-        <h3 style="color:#003478; margin-top:0; font-size:18px;">Swap Request</h3>
-        <div style="background:#f0f2f5; padding:8px; border-radius:4px; margin-bottom:15px; font-size:12px;">
+        <h3 style="color:#003478; margin:0 0 10px 0; font-size:16px;">Swap Request</h3>
+        <div style="background:#f0f2f5; padding:8px; border-radius:4px; margin-bottom:10px; font-size:12px;">
             <strong id="selectedShiftText"></strong>
         </div>
-        <label style="font-weight:600; font-size:13px; display:block; margin-bottom:5px;">To Colleague:</label>
+        <label style="font-size:12px; font-weight:600;">Offer to:</label>
         <select id="colleague">
             <option value="J. Miller">J. Miller (Line 2)</option>
             <option value="K. Davis">K. Davis (Trim A)</option>
@@ -381,13 +313,11 @@ const MANAGER_ID = "692f4f89c355107da4929d3b";
 let activeCardId = null;   
 let chosenShiftName = "";
 
-// 1. Initialize logic for 3 cards
 window.onload = function() {
     const cards = ['card-1', 'card-2', 'card-3'];
     cards.forEach(id => {
         if (localStorage.getItem(id) === 'pending') {
-            const card = document.getElementById(id);
-            if(card) card.classList.add('pending-state');
+            document.getElementById(id).classList.add('pending-state');
         }
     });
 };
@@ -421,19 +351,20 @@ async function sendSwapRequest() {
     }
 
     showToast(`Request sent to ${colleague}`);
-
+    
     // API Call
-    sendNotification(`Shift Swap Request: ${chosenShiftName} offered to ${colleague}`);
+    sendNotification(`Swap Request: ${chosenShiftName} -> ${colleague}`);
 }
 
 async function claimShift(id, info, owner) {
     const btn = document.querySelector(`#${id} .btn-claim`);
     if(btn) {
-        btn.innerText = "Claim Pending";
+        btn.innerText = "Pending";
         btn.disabled = true;
+        btn.style.opacity = "0.7";
     }
     showToast("Claim sent!");
-    sendNotification(`Shift Claim Request: User wants to pick up ${info} from ${owner}`);
+    sendNotification(`Claim Request: User wants ${info} from ${owner}`);
 }
 
 function cancelSwap(id) {
@@ -441,7 +372,7 @@ function cancelSwap(id) {
     if(card) {
         card.classList.remove("pending-state");
         localStorage.removeItem(id);
-        showToast("Request Cancelled", "error"); // Use "error" style for red bg
+        showToast("Request Cancelled", "error");
     }
 }
 
@@ -451,7 +382,6 @@ function showToast(msg, type='success') {
     t.className = "show";
     if(type === 'error') t.style.backgroundColor = "#d32f2f";
     else t.style.backgroundColor = "#2e7d32";
-    
     setTimeout(() => { t.className = ""; }, 3000);
 }
 
