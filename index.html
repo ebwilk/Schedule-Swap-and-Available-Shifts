@@ -1,1 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ford Shift Scheduler</title>
 
+<style>
+    /* GLOBAL RESET & FONTS */
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: "Ford Antenna", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f0f2f5;
+        padding: 20px;
+        margin: 0;
+        min-height: 100vh;
+    }
+
+    /* WIDGET CONTAINER */
+    .widget {
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-top: 6px solid #003478; /* Ford Trustmark Blue */
+        overflow: visible; 
+    }
+
+    h2 {
+        margin: 0 0 12px 0;
+        text-align: center;
+        color: #003478;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    /* TABS */
+    .tabs {
+        display: flex;
+        background: #f0f2f5;
+        border-radius: 6px;
+        padding: 4px;
+        margin-bottom: 16px;
+    }
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .tab.active {
+        background: #fff;
+        color: #003478;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .date-range {
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 12px;
+        color: #555;
+        font-size: 14px;
+    }
+
+    /* NAV & WEEK DAYS */
+    .nav-arrows {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 18px;
+        padding: 0 8px;
+        color: #003478;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .week-days {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+        margin-bottom: 16px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .week-days div {
+        flex: 1;
+        text-align: center;
+        padding: 8px 0;
+        border-radius: 4px;
+        background: #f9f9f9;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .week-days .active {
+        background: #003478;
+        color: white;
+        font-weight: 600;
+    }
+
+    .summary {
+        display: flex;
+        justify-content: space-around;
+        background: #eef4ff;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #003478;
+        border: 1px solid #dae7ff;
+    }
+
+    .day-label {
+        margin-top: 12px;
+        margin-bottom: 6px;
+        font-weight: 700;
+        color: #333;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* SHIFT CARD STYLING */
+    .shift-card {
+        background: white;
+        padding: 14px;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+        border-left: 5px solid #003478;
+        margin-bottom: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    /* Available Pickup Styling (Green Accent) */
+    .shift-card.pickup-card {
+        border-left: 5px solid #2e7d32;
+    }
+
+    .shift-card.pending-state {
+        background-color: #fffdf5;
+        border-left-color: #fca311;
+    }
+
+    .shift-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 6px;
+    }
+
+    .shift-time {
+        font-size: 17px;
+        font-weight: 700;
+        color: #111;
+    }
+
+    /* BADGES */
+    .badge {
+        display: none;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        border-radius: 12px;
+        background: #fca311;
+        color: #000;
+    }
+    .shift-card.pending-state .badge { display: inline-block; }
+
+    .pickup-badge {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        border-radius: 12px;
+        background: #e8f5e9;
+        color: #1b5e20;
+    }
+
+    .shift-role {
+        font-size: 14px;
+        font-weight: 600;
+        color: #003478;
+        margin-bottom: 4px;
+    }
+
+    .shift-location {
+        font-size: 13px;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .shift-meta {
+        font-size: 12px;
+        color: #777;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .offered-by {
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    .responsibility-warning {
+        display: none;
+        font-size: 11px;
+        color: #d32f2f;
+        margin-top: 8px;
+        font-style: italic;
+    }
+    .shift-card.pending-state .responsibility-warning { display: block; }
+
+    /* BUTTONS */
+    .action-btn {
+        margin-top: 10px;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+    .btn-request {
+        background: white;
+        color: #003478;
+        border: 1px solid #003478;
+    }
+    .btn-request:hover {
+        background: #003478;
+        color: white;
+    }
+
+    .btn-claim {
+        background: #2e7d32;
+        color: white;
+        border: none;
+    }
+    .btn-claim:hover { background: #1b5e20; }
+    
+    .btn-claim:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    .btn-cancel {
+        display: none;
+        background: white;
+        color: #d32f2f;
+        border: 1px solid #d32f2f;
+    }
+    .btn-cancel:hover { background: #d32f2f; color: white; }
+
+    .shift-card.pending-state .btn-request { display: none; }
+    .shift-card.pending-state .btn-cancel { display: block; }
+
+    /* MODAL */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 24px;
+        width: 100%;
+        max-width: 380px;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .close { float: right; cursor: pointer; font-size: 24px; color: #999; }
+    
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background: #fff;
+    }
+
+    .modal-btn {
+        background: #003478;
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 4px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+
+    /* TOAST */
+    #toast {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: #2e7d32;
+        color: #fff;
+        text-align: center;
+        border-radius: 4px;
+        padding: 16px;
+        position: fixed;
+        left: 50%;
+        bottom: 30px;
+        transform: translateX(-50%);
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        font-size: 15px;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 0.5s, bottom 0.5s;
+    }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    #toast.error { background-color: #d32f2f; }
+</style>
+</head>
+
+<body>
+
+<div class="widget">
+
+    <h2>Crew Scheduler</h2>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
+        <div class="tab" onclick="switchTab('open-pickups')">Available Pickups (2)</div>
+    </div>
+
+    <div id="my-shifts" class="tab-content active">
+        <div class="date-range">Nov 24 – Nov 30, 2025</div>
+
+        <div class="nav-arrows">
+            <span>&lsaquo; Prev</span>
+            <span>Next &rsaquo;</span>
+        </div>
+
+        <div class="week-days">
+            <div>Mo<br>24</div>
+            <div class="active">Tu<br>25</div>
+            <div>We<br>26</div>
+            <div>Th<br>27</div>
+            <div>Fr<br>28</div>
+            <div>Sa<br>29</div>
+            <div>Su<br>30</div>
+        </div>
+
+        <div class="summary">
+            <span>Est. Pay: $920</span>
+            <span>Hours: 30.0</span>
+        </div>
+
+        <div class="day-label">Tue, Nov 25</div>
+        <div class="shift-card" id="card-1">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 16:30</div>
+                <span class="badge">Swap Pending</span>
+            </div>
+            <div class="shift-role">Trim Assembly - Station 14</div>
+            <div class="shift-location">
+                <span>📍 Zone C, Dearborn Truck Plant</span>
+            </div>
+            <div class="shift-meta">
+                <span>Shift #1 (A Crew)</span>
+                <span>10 hrs</span>
+            </div>
+            <div class="responsibility-warning">
+                ⚠️ You are responsible for this shift until the swap is finalized.
+            </div>
+            <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25 | 06:00 - 16:30')">Request Shift Swap</button>
+            <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
+        </div>
+
+        <div class="day-label">Wed, Nov 26</div>
+        <div class="shift-card" id="card-2">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 16:30</div>
+                <span class="badge">Swap Pending</span>
+            </div>
+            <div class="shift-role">Chassis Marriage - Line 2</div>
+            <div class="shift-location">
+                <span>📍 Zone B, Dearborn Truck Plant</span>
+            </div>
+            <div class="shift-meta">
+                <span>Shift #1 (A Crew)</span>
+                <span>10 hrs</span>
+            </div>
+            <div class="responsibility-warning">
+                ⚠️ You are responsible for this shift until the swap is finalized.
+            </div>
+            <button class="action-btn btn-request" onclick="openSwapModal('card-2', 'Wed, Nov 26 | 06:00 - 16:30')">Request Shift Swap</button>
+            <button class="action-btn btn-cancel" onclick="cancelSwap('card-2')">Cancel Request</button>
+        </div>
+    </div>
+
+    <div id="open-pickups" class="tab-content">
+        <div class="date-range" style="margin-bottom: 20px;">Shifts offered by teammates</div>
+
+        <div class="day-label">Wed, Nov 26</div>
+        <div class="shift-card pickup-card" id="pickup-1">
+            <div class="shift-header">
+                <div class="shift-time">16:30 – 02:30</div>
+                <span class="pickup-badge">Open</span>
+            </div>
+            <div class="shift-role">Paint Shop - Clear Coat</div>
+            <div class="shift-location">
+                <span>📍 Zone P, Dearborn Truck Plant</span>
+            </div>
+            <div class="shift-meta">
+                <span class="offered-by">Offered by: M. Johnson</span>
+                <span>10 hrs</span>
+            </div>
+            <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26 | 16:30 - 02:30', 'M. Johnson')">Claim Shift</button>
+        </div>
+
+        <div class="day-label">Sat, Nov 29</div>
+        <div class="shift-card pickup-card" id="pickup-2">
+            <div class="shift-header">
+                <div class="shift-time">06:00 – 14:00</div>
+                <span class="pickup-badge">Open</span>
+            </div>
+            <div class="shift-role">Material Handling - Forklift</div>
+            <div class="shift-location">
+                <span>📍 Zone A, Dearborn Truck Plant</span>
+            </div>
+            <div class="shift-meta">
+                <span class="offered-by">Offered by: T. Smith</span>
+                <span>8 hrs</span>
+            </div>
+            <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29 | 06:00 - 14:00', 'T. Smith')">Claim Shift</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="toast">Request Sent Successfully!</div>
+
+<div id="swapModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSwapModal()">&times;</span>
+        <h3 style="color:#003478; margin-top:0;">Swap Request</h3>
+        <p style="font-size:14px; color:#555;">Select a colleague to offer this shift to:</p>
+        
+        <div style="background:#f0f2f5; padding:10px; border-radius:4px; margin-bottom:15px; font-size:13px;">
+            <strong id="selectedShiftText"></strong>
+        </div>
+
+        <label style="font-weight:600; font-size:14px; display:block; margin-bottom:8px;">Available Colleagues:</label>
+        <select id="colleague">
+            <option value="J. Miller (Line 2)">J. Miller (Line 2)</option>
+            <option value="K. Davis (Trim A)">K. Davis (Trim A)</option>
+            <option value="R. Sanchez (Floater)">R. Sanchez (Floater)</option>
+            <option value="T. Wilson (Zone C)">T. Wilson (Zone C)</option>
+        </select>
+
+        <button class="modal-btn" onclick="sendSwapRequest()">Send Request</button>
+    </div>
+</div>
+
+<script>
+// MANAGER ID CONSTANT
+const MANAGER_ACCESSOR_ID = "692f4f89c355107da4929d3b";
+
+let activeCardId = null;   
+let chosenShiftName = "";
+
+// 1. Initialize State
+window.onload = function() {
+    const cards = ['card-1', 'card-2'];
+    cards.forEach(id => {
+        if (localStorage.getItem(id) === 'pending') {
+            document.getElementById(id).classList.add('pending-state');
+        }
+    });
+};
+
+// 2. Tab Switching Logic
+function switchTab(tabId) {
+    // Hide all contents
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+    // Show selected
+    document.getElementById(tabId).classList.add('active');
+    
+    // Highlight tab button
+    const tabs = document.querySelectorAll('.tab');
+    if(tabId === 'my-shifts') tabs[0].classList.add('active');
+    else tabs[1].classList.add('active');
+}
+
+function openSwapModal(cardId, shiftName) {
+    activeCardId = cardId;
+    chosenShiftName = shiftName;
+    document.getElementById("selectedShiftText").innerText = shiftName;
+    document.getElementById("swapModal").style.display = "flex";
+}
+
+function closeSwapModal() {
+    document.getElementById("swapModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("swapModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    
+    toast.className = "show";
+    if(type === 'error') toast.classList.add("error");
+    
+    setTimeout(function(){ 
+        toast.className = toast.className.replace("show", ""); 
+    }, 3000);
+}
+
+// 3. Action: Send Swap Request (Existing)
+async function sendSwapRequest() {
+    const colleague = document.getElementById("colleague").value;
+    closeSwapModal();
+
+    // Update UI
+    const card = document.getElementById(activeCardId);
+    if(card) {
+        card.classList.add("pending-state");
+        localStorage.setItem(activeCardId, 'pending');
+    }
+
+    showToast(`Request sent to ${colleague}`);
+
+    const payload = {
+        // NOTIFICATION TARGET: MANAGER
+        "accessorIds": [MANAGER_ACCESSOR_ID], 
+        "channels": ["notificationCenter", "push"],
+        "content": {
+            "en_US": { "text": `Shift Swap Request: ${chosenShiftName} offered to ${colleague}` }
+        },
+        "image": {
+            "en_US": { "type":"image", "href":"https://raw.githubusercontent.com/ebwilk/Shift-Swap/refs/heads/main/Ford_logo_flat.svg.png", "width":600,"height":400 }
+        },
+        "link":"https://app.staffbase.com/content/page/6914e3ecd5cde774c74364f1"
+    };
+
+    sendNotification(payload);
+}
+
+// 4. Action: Claim Shift (New)
+async function claimShift(cardId, shiftInfo, owner) {
+    const btn = document.querySelector(`#${cardId} .btn-claim`);
+    if(btn) {
+        btn.innerText = "Claim Pending";
+        btn.disabled = true;
+    }
+
+    showToast(`Claim sent for approval!`);
+
+    const payload = {
+        // NOTIFICATION TARGET: MANAGER
+        "accessorIds": [MANAGER_ACCESSOR_ID], 
+        "channels": ["notificationCenter", "push"],
+        "content": {
+            "en_US": { "text": `Shift Claim Request: User wants to pick up ${shiftInfo} from ${owner}` }
+        },
+        "image": {
+            "en_US": { "type":"image", "href":"https://raw.githubusercontent.com/ebwilk/Shift-Swap/refs/heads/main/Ford_logo_flat.svg.png", "width":600,"height":400 }
+        }
+    };
+
+    sendNotification(payload);
+}
+
+// Helper: API Call
+async function sendNotification(payload) {
+    try {
+        await fetch("https://app.staffbase.com/api/branch/notifications", {
+            method: "POST",
+            headers: {
+                "Authorization":"Basic NjkzMWUzM2EyYWU0NGMxZWE4ZTI4NTY2OkMqTnQ2YSRJNWF5RzF0dkR1a0hFdW0hbGFEMTRsZk1+S185ITcxQ09jV1Jsb3ctJmpDczMrKmFveXdRSikyLXU=",
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+    } catch (e) {
+        console.error("API error:", e);
+    }
+}
+
+// 5. Action: Cancel Request
+function cancelSwap(cardId) {
+    const card = document.getElementById(cardId);
+    if(card) {
+        card.classList.remove("pending-state");
+        localStorage.removeItem(cardId);
+        showToast("Request Cancelled", "error");
+    }
+}
+</script>
+
+</body>
+</html>
