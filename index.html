@@ -3,17 +3,30 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - Fully Interactive</title>
+<title>Ford Employee Mobile - Pro</title>
 
 <style>
-    /* GLOBAL RESET */
+    /* --- FORD BRANDING --- */
+    :root {
+        --ford-blue: #003478;
+        --ford-light-blue: #eef4ff;
+        --ford-gray-bg: #f4f5f8;
+        --ford-border: #d0d0d0;
+        --success: #2e7d32;
+        --danger: #d32f2f;
+        --warning: #fca311;
+        --text-dark: #1a1a1a;
+        --text-light: #555555;
+    }
+
     * { box-sizing: border-box; }
 
     body {
         font-family: "Ford Antenna", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: #f0f2f5;
-        padding: 8px; 
+        background: var(--ford-gray-bg);
         margin: 0;
+        padding: 10px;
+        color: var(--text-dark);
     }
 
     /* WIDGET CONTAINER */
@@ -22,44 +35,49 @@
         max-width: 480px;
         margin: 0 auto;
         background: #ffffff;
-        border-radius: 6px;
-        padding: 10px;
+        border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-top: 4px solid #003478; 
+        border-top: 4px solid var(--ford-blue);
+        overflow: hidden;
     }
 
-    h2 {
-        margin: 0 0 10px 0;
-        color: #003478;
-        font-weight: 700;
-        font-size: 16px; 
-        text-align: center;
+    /* HEADER (Matches Manager View) */
+    .header {
+        background: white;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+    .header h1 { margin: 0; font-size: 16px; color: var(--ford-blue); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; }
+    .header-meta { font-size: 11px; color: var(--text-light); font-weight: 600; text-transform: uppercase; }
 
     /* TABS */
     .tabs {
         display: flex;
         background: #f0f2f5;
-        border-radius: 4px;
         padding: 2px;
-        margin-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
     }
     .tab {
         flex: 1;
         text-align: center;
-        padding: 6px;
+        padding: 10px;
         font-size: 12px;
-        font-weight: 600;
-        color: #666;
+        font-weight: 700;
+        color: #777;
         cursor: pointer;
-        border-radius: 4px;
+        text-transform: uppercase;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
     }
     .tab.active {
         background: #fff;
-        color: #003478;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        color: var(--ford-blue);
+        border-bottom: 2px solid var(--ford-blue);
     }
-    .tab-content { display: none; }
+    .tab-content { display: none; padding: 10px; }
     .tab-content.active { display: block; }
 
     /* NAV HEADER */
@@ -67,9 +85,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         font-weight: 700;
-        color: #003478;
+        color: var(--ford-blue);
         font-size: 14px;
         user-select: none;
     }
@@ -78,163 +96,165 @@
         padding: 4px 12px; 
         font-size: 18px; 
         border-radius: 4px;
+        background: #f0f2f5;
     }
-    .nav-arrow:hover { background-color: #f0f2f5; }
 
     /* WEEK DAYS ROW */
     .week-days {
         display: flex;
         justify-content: space-between;
-        gap: 2px;
-        margin-bottom: 10px;
+        gap: 4px;
+        margin-bottom: 15px;
         font-size: 10px;
         color: #666;
     }
     .day-box {
         flex: 1;
         text-align: center;
-        padding: 6px 0;
-        border-radius: 3px;
+        padding: 8px 0;
+        border-radius: 2px;
         background: #f9f9f9;
         cursor: pointer;
         border: 1px solid #eee;
         transition: all 0.2s ease;
     }
-    .day-box:hover { background: #eef4ff; }
-    
     .day-box.active {
-        background: #003478;
+        background: var(--ford-blue);
         color: white;
-        font-weight: 600;
-        border-color: #003478;
+        font-weight: 700;
+        border-color: var(--ford-blue);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     /* SUMMARY ROW */
     .summary {
         display: flex;
         justify-content: space-between;
-        background: #eef4ff;
-        padding: 4px 8px;
-        border-radius: 4px;
-        margin-bottom: 10px;
+        background: var(--ford-light-blue);
+        padding: 8px 12px;
+        border-radius: 2px;
+        margin-bottom: 15px;
         font-size: 11px;
-        font-weight: 600;
-        color: #003478;
-        border: 1px solid #dae7ff;
+        font-weight: 700;
+        color: var(--ford-blue);
+        border-left: 3px solid var(--ford-blue);
     }
 
-    /* SHIFT CARD (Horizontal) */
+    /* SHIFT CARD */
     .shift-card {
         display: flex; 
         align-items: center;
         background: white;
-        padding: 8px; 
-        border-radius: 4px;
+        padding: 12px; 
+        border-radius: 2px;
         border: 1px solid #e0e0e0;
-        border-left: 3px solid #003478;
-        margin-bottom: 6px; 
-        min-height: 60px;
+        border-left: 4px solid var(--ford-blue);
+        margin-bottom: 8px; 
         transition: background-color 0.5s;
     }
-
-    /* Animation class for scroll highlighting */
-    .highlight-flash {
-        background-color: #e3f2fd !important;
-    }
-
-    .shift-card.pickup-card { border-left-color: #2e7d32; }
     
-    .shift-card.pending-state {
-        background-color: #fffdf5;
-        border-left-color: #fca311;
-    }
+    .highlight-flash { background-color: #e3f2fd !important; }
+    .shift-card.pickup-card { border-left-color: var(--success); }
+    .shift-card.pending-state { background-color: #fffdf5; border-left-color: var(--warning); }
 
-    .card-info { flex: 1; padding-right: 8px; }
+    .card-info { flex: 1; padding-right: 10px; }
     
     .card-action {
-        width: 70px;
+        width: 75px;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: flex-end;
     }
 
     .shift-date {
-        font-size: 10px;
-        font-weight: 700;
-        color: #003478;
-        text-transform: uppercase;
-        margin-bottom: 2px;
+        font-size: 10px; font-weight: 700; color: #777; text-transform: uppercase; margin-bottom: 4px;
     }
     .shift-time {
-        font-size: 14px;
-        font-weight: 700;
-        color: #111;
-        line-height: 1.1;
+        font-size: 15px; font-weight: 700; color: var(--text-dark); line-height: 1.1;
     }
     .shift-role {
-        font-size: 11px;
-        font-weight: 600;
-        color: #333;
-        margin-top: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: 12px; font-weight: 600; color: var(--ford-blue); margin-top: 3px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .shift-meta {
-        font-size: 10px;
-        color: #777;
-        margin-top: 1px;
+        font-size: 11px; color: #555; margin-top: 2px; display:flex; align-items:center;
     }
-    .offered-by { color: #2e7d32; font-weight: 600; }
+    
+    /* ICONS */
+    .icon { width: 14px; height: 14px; fill: #777; margin-right: 4px; }
+    .icon-pending { fill: var(--warning); width: 20px; height: 20px; margin-bottom: 5px; }
 
-    /* Buttons */
+    /* BUTTONS */
     .btn-compact {
-        padding: 6px 4px;
-        font-size: 10px;
+        padding: 8px 12px;
+        font-size: 11px;
         font-weight: 700;
-        border-radius: 3px;
+        border-radius: 2px;
         cursor: pointer;
         width: 100%;
         text-align: center;
         text-transform: uppercase;
+        border: none;
     }
 
-    .btn-request { background: white; color: #003478; border: 1px solid #003478; }
-    .btn-request:hover { background: #003478; color: white; }
+    .btn-request { background: var(--ford-blue); color: white; }
+    .btn-request:hover { background: #002555; }
 
-    .btn-claim { background: #2e7d32; color: white; border: none; }
+    .btn-claim { background: var(--success); color: white; }
     
-    .btn-cancel { display: none; background: white; color: #d32f2f; border: 1px solid #d32f2f; }
+    .btn-cancel { 
+        display: none; background: white; color: var(--danger); border: 1px solid var(--danger); 
+    }
 
     .shift-card.pending-state .btn-request { display: none; }
     .shift-card.pending-state .btn-cancel { display: block; }
     
-    .status-text {
+    .status-badge {
         display: none;
         font-size: 9px;
-        color: #fca311;
+        color: var(--text-dark);
+        background: var(--warning);
         font-weight: 700;
-        text-align: center;
-        margin-bottom: 4px;
+        text-transform: uppercase;
+        padding: 2px 6px;
+        border-radius: 2px;
+        margin-bottom: 5px;
+        text-align:center;
     }
-    .shift-card.pending-state .status-text { display: block; }
+    .shift-card.pending-state .status-badge { display: inline-block; }
 
-    /* MODAL & TOAST */
+    /* MODAL */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 20px; z-index: 2000; }
-    .modal-content { background: white; padding: 15px; width: 100%; max-width: 320px; border-radius: 6px; }
-    select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin: 10px 0; font-size: 13px;}
-    .modal-btn { background: #003478; color: white; border: none; width: 100%; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-    .close { float: right; cursor: pointer; font-size: 18px; color: #999; }
+    .modal-content { background: white; padding: 20px; width: 100%; max-width: 340px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 2px; margin: 15px 0; font-size: 14px;}
+    .modal-btn { background: var(--ford-blue); color: white; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 2px; cursor: pointer; text-transform:uppercase;}
+    .close { float: right; cursor: pointer; font-size: 20px; color: #999; }
 
-    #toast { visibility: hidden; min-width: 200px; background-color: #2e7d32; color: #fff; text-align: center; border-radius: 4px; padding: 10px; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 3000; font-size: 12px; opacity: 0; transition: opacity 0.3s; }
+    #toast { visibility: hidden; min-width: 200px; background-color: var(--success); color: #fff; text-align: center; border-radius: 4px; padding: 12px; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 3000; font-size: 13px; opacity: 0; transition: opacity 0.3s; font-weight:600;}
     #toast.show { visibility: visible; opacity: 1; }
 </style>
 </head>
 
 <body>
 
+<svg style="display:none;">
+    <symbol id="icon-loc" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></symbol>
+    <symbol id="icon-swap" viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></symbol>
+</svg>
+
 <div class="widget">
-    <h2>Crew Scheduler</h2>
+    <div class="header">
+        <div style="display:flex; align-items:center;">
+            <img src="https://raw.githubusercontent.com/ebwilk/Shift-Swap/main/Ford_logo_flat.svg.png" 
+                 alt="Ford" 
+                 style="height:20px; margin-right:10px;"
+                 onerror="this.style.display='none'"> 
+            <h1>Crew Scheduler</h1>
+        </div>
+        <div class="header-meta">Shift A</div>
+    </div>
 
     <div class="tabs">
         <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
@@ -267,7 +287,9 @@
                 <div class="shift-date">Wed, Nov 26</div>
                 <div class="shift-time">16:30 – 02:30</div>
                 <div class="shift-role">Paint Shop - Clear Coat</div>
-                <div class="shift-meta"><span class="offered-by">By: M. Johnson</span> • 10h</div>
+                <div class="shift-meta">
+                    <svg class="icon"><use href="#icon-loc"></use></svg> Zone P • 10h
+                </div>
             </div>
             <div class="card-action">
                 <button class="btn-compact btn-claim" onclick="claimShift('pickup-1', 'Wed Nov 26', 'M. Johnson')">Claim</button>
@@ -278,7 +300,9 @@
                 <div class="shift-date">Sat, Nov 29</div>
                 <div class="shift-time">06:00 – 14:00</div>
                 <div class="shift-role">Material Handling</div>
-                <div class="shift-meta"><span class="offered-by">By: T. Smith</span> • 8h</div>
+                <div class="shift-meta">
+                    <svg class="icon"><use href="#icon-loc"></use></svg> Zone A • 8h
+                </div>
             </div>
             <div class="card-action">
                 <button class="btn-compact btn-claim" onclick="claimShift('pickup-2', 'Sat Nov 29', 'T. Smith')">Claim</button>
@@ -291,11 +315,11 @@
 <div id="swapModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeSwapModal()">&times;</span>
-        <h3 style="color:#003478; margin:0 0 10px 0; font-size:16px;">Swap Request</h3>
-        <div style="background:#f0f2f5; padding:8px; border-radius:4px; margin-bottom:10px; font-size:12px;">
+        <h3 style="color:#003478; margin:0 0 10px 0; font-size:16px; text-transform:uppercase;">Swap Shift</h3>
+        <div style="background:#f0f2f5; padding:10px; border-radius:2px; margin-bottom:10px; font-size:13px; font-weight:600;">
             <strong id="selectedShiftText"></strong>
         </div>
-        <label style="font-size:12px; font-weight:600;">Offer to:</label>
+        <label style="font-size:12px; font-weight:700; color:#555;">SELECT COLLEAGUE:</label>
         <select id="colleague">
             <option value="J. Miller">J. Miller (Line 2)</option>
             <option value="K. Davis">K. Davis (Trim A)</option>
@@ -309,19 +333,16 @@
 const MANAGER_ID = "692f4f89c355107da4929d3b";
 
 // --- STATE MANAGEMENT ---
-// Start date: Monday, Nov 24, 2025
 let currentWeekStart = new Date(2025, 10, 24); 
 let activeCardId = null;   
 let chosenShiftName = "";
 
-// --- INITIALIZATION ---
 window.onload = function() {
     renderSchedule();
 };
 
 // --- CORE RENDER FUNCTION ---
 function renderSchedule() {
-    // 1. Update Header Text
     const options = { month: 'short', day: 'numeric' };
     const endOfWeek = new Date(currentWeekStart);
     endOfWeek.setDate(currentWeekStart.getDate() + 6);
@@ -329,7 +350,6 @@ function renderSchedule() {
     document.getElementById('date-range-text').innerText = 
         `${currentWeekStart.toLocaleDateString('en-US', options)} – ${endOfWeek.toLocaleDateString('en-US', options)}`;
 
-    // 2. Render Week Days Row
     const daysContainer = document.getElementById('week-days-container');
     daysContainer.innerHTML = '';
     const dayNames = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -337,97 +357,55 @@ function renderSchedule() {
     for(let i=0; i<7; i++) {
         let d = new Date(currentWeekStart);
         d.setDate(currentWeekStart.getDate() + i);
-        
-        // Generate ISO date key for matching (YYYY-MM-DD)
-        // Note: Using local time construction to avoid timezone jumps
         const offset = d.getTimezoneOffset();
         const localDate = new Date(d.getTime() - (offset*60*1000));
         const dateKey = localDate.toISOString().split('T')[0];
 
         let div = document.createElement('div');
-        
-        // Default highlight Tuesday (just for the demo starting state)
         if(i === 1 && currentWeekStart.getDate() === 24) div.className = 'day-box active';
         else div.className = 'day-box';
 
         div.innerHTML = `${dayNames[i]}<br>${d.getDate()}`;
-        
-        // CLICK HANDLER: Highlight day + Scroll to Card
-        div.onclick = function() {
-            handleDayClick(this, dateKey);
-        };
-
+        div.onclick = function() { handleDayClick(this, dateKey); };
         daysContainer.appendChild(div);
     }
 
-    // 3. Render Shift Cards
     renderShiftsForWeek(currentWeekStart);
 }
 
-// --- CLICK HANDLER FOR DAYS ---
 function handleDayClick(element, dateKey) {
-    // 1. Update Active State in UI
     document.querySelectorAll('.day-box').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
 
-    // 2. Find the card
     const cardId = `shift-${dateKey}`;
     const card = document.getElementById(cardId);
 
     if (card) {
-        // 3. Smooth Scroll to Card
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 4. Flash Effect
         card.classList.add('highlight-flash');
-        setTimeout(() => {
-            card.classList.remove('highlight-flash');
-        }, 1000);
+        setTimeout(() => { card.classList.remove('highlight-flash'); }, 1000);
     } else {
-        // 5. No shift feedback
         showToast("No shift scheduled", "info");
     }
 }
 
-// --- SHIFT GENERATION LOGIC ---
 function renderShiftsForWeek(startDate) {
     const container = document.getElementById('shifts-container');
     container.innerHTML = '';
 
-    // Generate 3 shifts: Tue, Wed, Thu
-    // Using simple date math
-    let date1 = new Date(startDate); date1.setDate(startDate.getDate() + 1); // Tue
-    let date2 = new Date(startDate); date2.setDate(startDate.getDate() + 2); // Wed
-    let date3 = new Date(startDate); date3.setDate(startDate.getDate() + 3); // Thu
+    let date1 = new Date(startDate); date1.setDate(startDate.getDate() + 1); 
+    let date2 = new Date(startDate); date2.setDate(startDate.getDate() + 2); 
+    let date3 = new Date(startDate); date3.setDate(startDate.getDate() + 3); 
 
-    // Function to get YYYY-MM-DD local
     const getISO = (d) => {
         const offset = d.getTimezoneOffset();
         return new Date(d.getTime() - (offset*60*1000)).toISOString().split('T')[0];
     };
 
     const shifts = [
-        {
-            id: `shift-${getISO(date1)}`,
-            dateObj: date1,
-            time: "06:00 – 16:30",
-            role: "Trim Assembly - Stn 14",
-            meta: "Zone C • 10h • A Crew"
-        },
-        {
-            id: `shift-${getISO(date2)}`,
-            dateObj: date2,
-            time: "06:00 – 16:30",
-            role: "Chassis Marriage - Line 2",
-            meta: "Zone B • 10h • A Crew"
-        },
-        {
-            id: `shift-${getISO(date3)}`,
-            dateObj: date3,
-            time: "06:00 – 16:30",
-            role: "Quality Inspection - EOL",
-            meta: "Final Bay • 10h • A Crew"
-        }
+        { id: `shift-${getISO(date1)}`, dateObj: date1, time: "06:00 – 16:30", role: "Trim Assembly - Stn 14", meta: "Zone C" },
+        { id: `shift-${getISO(date2)}`, dateObj: date2, time: "06:00 – 16:30", role: "Chassis Marriage - Line 2", meta: "Zone B" },
+        { id: `shift-${getISO(date3)}`, dateObj: date3, time: "06:00 – 16:30", role: "Quality Inspection - EOL", meta: "Final Bay" }
     ];
 
     shifts.forEach(shift => {
@@ -442,10 +420,12 @@ function renderShiftsForWeek(startDate) {
                 <div class="shift-date">${dayName}, ${monthDay}</div>
                 <div class="shift-time">${shift.time}</div>
                 <div class="shift-role">${shift.role}</div>
-                <div class="shift-meta">${shift.meta}</div>
+                <div class="shift-meta">
+                    <svg class="icon"><use href="#icon-loc"></use></svg> ${shift.meta} • 10h
+                </div>
             </div>
             <div class="card-action">
-                <div class="status-text">PENDING</div>
+                <div class="status-badge">PENDING</div>
                 <button class="btn-compact btn-request" onclick="openSwapModal('${shift.id}', '${dayName} ${monthDay}')">Swap</button>
                 <button class="btn-compact btn-cancel" onclick="cancelSwap('${shift.id}')">Cancel</button>
             </div>
@@ -454,7 +434,6 @@ function renderShiftsForWeek(startDate) {
     });
 }
 
-// --- INTERACTION LOGIC ---
 function changeWeek(direction) {
     currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
     renderSchedule();
