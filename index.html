@@ -3,17 +3,31 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ford Shift Scheduler - Compact</title>
+<title>Ford Shift Scheduler - Branded</title>
 
 <style>
+    /* --- FORD BRANDING CONSTANTS --- */
+    :root {
+        --ford-blue: #003478;
+        --ford-light-blue: #eef4ff;
+        --ford-gray-bg: #f2f2f2;
+        --ford-text-dark: #1a1a1a;
+        --ford-text-med: #555555;
+        --ford-success: #2e7d32;
+        --ford-warning: #fca311;
+        --ford-danger: #d32f2f;
+    }
+
     /* GLOBAL RESET & FONTS */
     * { box-sizing: border-box; }
 
     body {
-        font-family: "Ford Antenna", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: #f0f2f5;
-        padding: 10px; /* Reduced outer padding */
+        /* Attempt to use official Ford Antenna font, fall back to robust sans-serifs */
+        font-family: "Ford Antenna Cond", "Ford Antenna", Helvetica Neue, Helvetica, Arial, sans-serif;
+        background: var(--ford-gray-bg);
+        padding: 10px;
         margin: 0;
+        color: var(--ford-text-dark);
     }
 
     /* WIDGET CONTAINER */
@@ -22,65 +36,82 @@
         max-width: 480px;
         margin: 0 auto;
         background: #ffffff;
-        border-radius: 8px;
-        padding: 10px 12px; /* Tighter padding */
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-top: 4px solid #003478; /* Thinner border */
-        overflow: visible; 
+        border-radius: 4px; /* Sharper corners */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        overflow: hidden; /* Ensure header doesn't bleed out */
     }
 
-    /* COMPACT HEADER GRID */
-    .header-grid {
-        display: grid;
-        grid-template-columns: 30px 1fr 30px;
+    /* --- NEW FORD BRAND HEADER --- */
+    .ford-header-bar {
+        background-color: var(--ford-blue);
+        color: white;
+        padding: 12px 15px;
+        display: flex;
         align-items: center;
-        margin-bottom: 10px;
-        text-align: center;
+        justify-content: space-between;
     }
-    
-    .header-title {
-        font-size: 14px;
+
+    .brand-area {
+        display: flex;
+        align-items: center;
+    }
+
+    .ford-logo {
+        height: 22px; /* Adjust based on actual logo file aspect ratio */
+        width: auto;
+        margin-right: 12px;
+    }
+
+    .app-title {
         font-weight: 700;
-        color: #003478;
-        line-height: 1.2;
-    }
-    .header-sub {
-        font-size: 11px;
-        color: #666;
-        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
     }
 
-    .nav-arrow {
-        font-size: 20px;
-        color: #003478;
-        cursor: pointer;
-        font-weight: bold;
-        user-select: none;
+    /* COMPACT DATE NAV (Integrated into sub-header) */
+    .date-sub-header {
+        background: #e0e0e0;
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: var(--ford-blue);
+        font-size: 13px;
+        border-bottom: 1px solid #ccc;
+    }
+    .nav-arrow { font-size: 18px; cursor: pointer; padding: 0 10px; user-select: none;}
+
+
+    /* WIDGET BODY CONTENT */
+    .widget-body {
+        padding: 12px;
     }
 
-    /* TABS - SLIMMER */
+    /* TABS - BRANDED */
     .tabs {
         display: flex;
-        background: #f0f2f5;
-        border-radius: 6px;
-        padding: 2px;
-        margin-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+        margin-bottom: 15px;
     }
     .tab {
         flex: 1;
         text-align: center;
-        padding: 6px;
-        font-size: 12px;
+        padding: 10px 5px;
+        font-size: 13px;
         font-weight: 600;
-        color: #666;
+        color: var(--ford-text-med);
         cursor: pointer;
-        border-radius: 4px;
         transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 3px solid transparent; /* Setup for active state */
     }
     .tab.active {
-        background: #fff;
-        color: #003478;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        color: var(--ford-blue);
+        border-bottom: 3px solid var(--ford-blue);
+        background: linear-gradient(to top, #eef4ff 0%, #fff 100%);
     }
 
     .tab-content { display: none; }
@@ -90,147 +121,162 @@
     .week-days {
         display: flex;
         justify-content: space-between;
-        gap: 2px;
-        margin-bottom: 10px;
-        font-size: 10px;
-        color: #666;
+        gap: 4px;
+        margin-bottom: 12px;
+        font-size: 11px;
+        color: var(--ford-text-med);
     }
-
     .week-days div {
         flex: 1;
         text-align: center;
-        padding: 6px 0;
-        border-radius: 4px;
-        background: #f9f9f9;
+        padding: 8px 0;
+        border-radius: 2px;
+        background: #f0f0f0;
         cursor: pointer;
+        border: 1px solid #ddd;
     }
-
     .week-days .active {
-        background: #003478;
+        background: var(--ford-blue);
         color: white;
-        font-weight: 600;
+        font-weight: 700;
+        border-color: var(--ford-blue);
     }
 
     /* SUMMARY ROW */
     .summary {
         display: flex;
         justify-content: space-between;
-        background: #eef4ff;
-        padding: 6px 12px;
-        border-radius: 4px;
-        margin-bottom: 10px;
+        background: var(--ford-light-blue);
+        padding: 8px 12px;
+        border-radius: 2px;
+        margin-bottom: 12px;
         font-size: 12px;
-        font-weight: 600;
-        color: #003478;
-        border: 1px solid #dae7ff;
+        font-weight: 700;
+        color: var(--ford-blue);
+        border-left: 4px solid var(--ford-blue);
     }
 
     /* DAY LABEL */
     .day-label {
         font-weight: 700;
-        color: #333;
-        font-size: 12px;
-        margin-bottom: 4px;
+        color: var(--ford-text-dark);
+        font-size: 13px;
+        margin-bottom: 6px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        text-transform: uppercase;
     }
 
-    /* SHIFT CARD - COMPACT */
+    /* SHIFT CARD - BRANDED */
     .shift-card {
         background: white;
-        padding: 10px; /* Reduced padding */
-        border-radius: 6px;
-        border: 1px solid #e0e0e0;
-        border-left: 4px solid #003478;
-        margin-bottom: 8px; /* Less gap */
+        padding: 12px;
+        border-radius: 2px;
+        border: 1px solid #d0d0d0;
+        border-left: 5px solid var(--ford-blue);
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .shift-card.pickup-card { border-left-color: #2e7d32; }
+    .shift-card.pickup-card { border-left-color: var(--ford-success); }
     .shift-card.pending-state { 
         background-color: #fffdf5; 
-        border-left-color: #fca311; 
+        border-left-color: var(--ford-warning); 
     }
 
     .shift-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
 
     .shift-time {
-        font-size: 15px; /* Slightly smaller */
+        font-size: 16px;
         font-weight: 700;
-        color: #111;
+        color: var(--ford-text-dark);
     }
 
     .shift-role {
         font-size: 13px;
         font-weight: 600;
-        color: #003478;
-        margin-bottom: 2px;
+        color: var(--ford-blue);
+        margin-bottom: 4px;
     }
 
     .shift-location {
-        font-size: 11px;
-        color: #555;
-        margin-bottom: 6px;
+        font-size: 12px;
+        color: var(--ford-text-med);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
     }
+    .icon-loc { margin-right: 4px; color: var(--ford-blue); }
 
     .shift-meta {
         font-size: 11px;
         color: #777;
-        padding-top: 6px;
+        padding-top: 8px;
         border-top: 1px solid #f0f0f0;
         display: flex;
         justify-content: space-between;
+        font-weight: 500;
+        text-transform: uppercase;
     }
     
-    .offered-by { color: #2e7d32; font-weight: 600; }
+    .offered-by { color: var(--ford-success); font-weight: 700; }
 
-    /* ACTION BUTTONS - SLIM */
+    /* ACTION BUTTONS - SLIM & BRANDED */
     .action-btn {
-        margin-top: 8px;
-        padding: 8px; /* Slimmer button */
+        margin-top: 12px;
+        padding: 10px;
         font-size: 13px;
-        font-weight: 600;
-        border-radius: 4px;
+        font-weight: 700;
+        border-radius: 2px;
         cursor: pointer;
         width: 100%;
         text-align: center;
         border: 1px solid transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
     }
 
     .btn-request {
         background: white;
-        color: #003478;
-        border-color: #003478;
+        color: var(--ford-blue);
+        border: 2px solid var(--ford-blue);
     }
+    .btn-request:hover { background: var(--ford-blue); color: white; }
+
     .btn-claim {
-        background: #2e7d32;
+        background: var(--ford-success);
         color: white;
     }
+    .btn-claim:hover { background: #1b5e20; }
+
     .btn-cancel {
         display: none;
         background: white;
-        color: #d32f2f;
-        border-color: #d32f2f;
+        color: var(--ford-danger);
+        border: 2px solid var(--ford-danger);
     }
 
     .shift-card.pending-state .btn-request { display: none; }
     .shift-card.pending-state .btn-cancel { display: block; }
-    .badge { display:none; background:#fca311; color:#000; font-size:9px; padding:2px 5px; border-radius:4px; }
-    .shift-card.pending-state .badge { display:inline-block; }
-    .pickup-badge { background:#e8f5e9; color:#1b5e20; font-size:9px; padding:2px 5px; border-radius:4px; font-weight:700;}
-
-    /* MODAL & TOAST (Same functional styles, just ensures z-index) */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 20px;}
-    .modal-content { background: white; padding: 20px; width: 100%; max-width: 350px; border-radius: 8px; }
-    select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;}
-    .modal-btn { background: #003478; color: white; border: none; width: 100%; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold;}
     
-    #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 12px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 13px; opacity: 0; transition: opacity 0.3s;}
+    .badge { display:none; background:var(--ford-warning); color:#000; font-size:10px; padding:3px 6px; border-radius:2px; text-transform:uppercase; font-weight:700;}
+    .shift-card.pending-state .badge { display:inline-block; }
+    .pickup-badge { background:var(--ford-success); color:white; font-size:10px; padding:3px 6px; border-radius:2px; font-weight:700; text-transform:uppercase;}
+
+    /* MODAL & TOAST styling */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 20px;}
+    .modal-content { background: white; padding: 24px; width: 100%; max-width: 350px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    select { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 2px; font-family: inherit;}
+    .modal-btn { background: var(--ford-blue); color: white; border: none; width: 100%; padding: 14px; border-radius: 2px; cursor: pointer; font-weight: bold; text-transform: uppercase;}
+    
+    #toast { visibility: hidden; min-width: 250px; background-color: var(--ford-blue); color: #fff; text-align: center; border-radius: 2px; padding: 14px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight:600; opacity: 0; transition: opacity 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; }
 </style>
 </head>
@@ -239,107 +285,121 @@
 
 <div class="widget">
 
-    <div class="header-grid">
-        <div class="nav-arrow">&lsaquo;</div>
-        <div>
-            <div class="header-title">My Schedule</div>
-            <div class="header-sub">Nov 24 – Nov 30</div>
-        </div>
-        <div class="nav-arrow">&rsaquo;</div>
-    </div>
-
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
-        <div class="tab" onclick="switchTab('open-pickups')">Pickups (2)</div>
-    </div>
-
-    <div id="my-shifts" class="tab-content active">
-        
-        <div class="week-days">
-            <div>Mo<br>24</div>
-            <div class="active">Tu<br>25</div>
-            <div>We<br>26</div>
-            <div>Th<br>27</div>
-            <div>Fr<br>28</div>
-            <div>Sa<br>29</div>
-            <div>Su<br>30</div>
-        </div>
-
-        <div class="summary">
-            <span>Est. Pay: $920</span>
-            <span>Hours: 30.0</span>
-        </div>
-
-        <div class="day-label">
-            Tue, Nov 25
-            <span style="font-size:10px; font-weight:400; color:#003478; cursor:pointer;">View Full Week</span>
-        </div>
-        
-        <div class="shift-card" id="card-1">
-            <div class="shift-header">
-                <div class="shift-time">06:00 – 16:30</div>
-                <span class="badge">Swap Pending</span>
-            </div>
-            <div class="shift-role">Trim Assembly - Station 14</div>
-            <div class="shift-location">📍 Zone C, Dearborn Truck Plant</div>
-            <div class="shift-meta">
-                <span>Shift #1 (A Crew)</span>
-                <span>10 hrs</span>
-            </div>
-            <div id="warning-1" style="display:none; font-size:10px; color:#d32f2f; margin-top:5px;">⚠️ Pending Swap</div>
-            <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25')">Request Swap</button>
-            <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
+    <div class="ford-header-bar">
+        <div class="brand-area">
+            <img src="https://www.ford.com/etc/designs/ford-v-3/clientlibs_base/images/ford-oval-white.svg" alt="Ford Logo" class="ford-logo">
+            <span class="app-title">Crew Schedule</span>
         </div>
     </div>
 
-    <div id="open-pickups" class="tab-content">
-        <div class="day-label">Wed, Nov 26</div>
-        <div class="shift-card pickup-card" id="pickup-1">
-            <div class="shift-header">
-                <div class="shift-time">16:30 – 02:30</div>
-                <span class="pickup-badge">Open</span>
-            </div>
-            <div class="shift-role">Paint Shop - Clear Coat</div>
-            <div class="shift-meta">
-                <span class="offered-by">By: M. Johnson</span>
-                <span>10 hrs</span>
-            </div>
-            <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26 | 16:30', 'M. Johnson')">Claim Shift</button>
-        </div>
-
-        <div class="day-label">Sat, Nov 29</div>
-        <div class="shift-card pickup-card" id="pickup-2">
-            <div class="shift-header">
-                <div class="shift-time">06:00 – 14:00</div>
-                <span class="pickup-badge">Open</span>
-            </div>
-            <div class="shift-role">Material Handling - Forklift</div>
-            <div class="shift-meta">
-                <span class="offered-by">By: T. Smith</span>
-                <span>8 hrs</span>
-            </div>
-            <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29 | 06:00', 'T. Smith')">Claim Shift</button>
-        </div>
+    <div class="date-sub-header">
+        <span class="nav-arrow">&lsaquo;</span>
+        <span>Nov 24 – Nov 30</span>
+        <span class="nav-arrow">&rsaquo;</span>
     </div>
 
-</div>
+    <div class="widget-body">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('my-shifts')">My Shifts</div>
+            <div class="tab" onclick="switchTab('open-pickups')">Pickups (2)</div>
+        </div>
+
+        <div id="my-shifts" class="tab-content active">
+            
+            <div class="week-days">
+                <div>Mo<br>24</div>
+                <div class="active">Tu<br>25</div>
+                <div>We<br>26</div>
+                <div>Th<br>27</div>
+                <div>Fr<br>28</div>
+                <div>Sa<br>29</div>
+                <div>Su<br>30</div>
+            </div>
+
+            <div class="summary">
+                <span>Est. Pay: $920</span>
+                <span>Hours: 30.0</span>
+            </div>
+
+            <div class="day-label">
+                <span>Tue, Nov 25</span>
+                <span style="font-size:11px; font-weight:600; color:var(--ford-blue); cursor:pointer; text-transform:none;">View Week</span>
+            </div>
+            
+            <div class="shift-card" id="card-1">
+                <div class="shift-header">
+                    <div class="shift-time">06:00 – 16:30</div>
+                    <span class="badge">Swap Pending</span>
+                </div>
+                <div class="shift-role">Trim Assembly - Station 14</div>
+                <div class="shift-location">
+                    <span class="icon-loc">📍</span> Zone C, Dearborn Truck Plant
+                </div>
+                <div class="shift-meta">
+                    <span>Shift #1 (A Crew)</span>
+                    <span>10 hrs</span>
+                </div>
+                <div id="warning-1" style="display:none; font-size:11px; color:var(--ford-danger); margin-top:8px; font-weight:600;">⚠️ Pending Swap Approval</div>
+                <button class="action-btn btn-request" onclick="openSwapModal('card-1', 'Tue, Nov 25')">Request Swap</button>
+                <button class="action-btn btn-cancel" onclick="cancelSwap('card-1')">Cancel Request</button>
+            </div>
+        </div>
+
+        <div id="open-pickups" class="tab-content">
+            <div class="day-label">Wed, Nov 26</div>
+            <div class="shift-card pickup-card" id="pickup-1">
+                <div class="shift-header">
+                    <div class="shift-time">16:30 – 02:30</div>
+                    <span class="pickup-badge">Open</span>
+                </div>
+                <div class="shift-role">Paint Shop - Clear Coat</div>
+                <div class="shift-location">
+                     <span class="icon-loc">📍</span> Zone P, Dearborn Truck Plant
+                </div>
+                <div class="shift-meta">
+                    <span class="offered-by">Offered By: M. Johnson</span>
+                    <span>10 hrs</span>
+                </div>
+                <button class="action-btn btn-claim" onclick="claimShift('pickup-1', 'Wed, Nov 26 | 16:30', 'M. Johnson')">Claim Shift</button>
+            </div>
+
+            <div class="day-label">Sat, Nov 29</div>
+            <div class="shift-card pickup-card" id="pickup-2">
+                <div class="shift-header">
+                    <div class="shift-time">06:00 – 14:00</div>
+                    <span class="pickup-badge">Open</span>
+                </div>
+                <div class="shift-role">Material Handling - Forklift</div>
+                 <div class="shift-location">
+                     <span class="icon-loc">📍</span> Zone A, Dearborn Truck Plant
+                </div>
+                <div class="shift-meta">
+                    <span class="offered-by">Offered By: T. Smith</span>
+                    <span>8 hrs</span>
+                </div>
+                <button class="action-btn btn-claim" onclick="claimShift('pickup-2', 'Sat, Nov 29 | 06:00', 'T. Smith')">Claim Shift</button>
+            </div>
+        </div>
+    </div> </div>
 
 <div id="toast">Request Sent!</div>
 <div id="swapModal" class="modal">
     <div class="modal-content">
-        <span style="float:right; cursor:pointer; font-size:20px;" onclick="closeSwapModal()">&times;</span>
-        <h4 style="margin:0 0 10px 0; color:#003478;">Swap Shift</h4>
-        <div style="font-size:13px; margin-bottom:10px; color:#555;" id="selectedShiftText"></div>
+        <span style="float:right; cursor:pointer; font-size:24px; color:#999;" onclick="closeSwapModal()">&times;</span>
+        <h3 style="margin:0 0 15px 0; color:var(--ford-blue); text-transform:uppercase;">Swap Shift</h3>
+        <p style="font-size:13px; color:#555; margin-bottom:5px;">Select Colleague:</p>
+        <div style="font-size:14px; margin-bottom:15px; color:var(--ford-text-dark); font-weight:700; background:#f0f0f0; padding:8px; border-radius:2px;" id="selectedShiftText"></div>
         <select id="colleague">
-            <option value="J. Miller">J. Miller</option>
-            <option value="K. Davis">K. Davis</option>
-            <option value="R. Sanchez">R. Sanchez</option>
+            <option value="J. Miller">J. Miller (Line 2)</option>
+            <option value="K. Davis">K. Davis (Trim A)</option>
+            <option value="R. Sanchez">R. Sanchez (Floater)</option>
         </select>
         <button class="modal-btn" onclick="sendSwapRequest()">Send Request</button>
     </div>
 </div>
 
 <script>
+// ... (Same JavaScript logic as before, no changes needed here) ...
 const MANAGER_ID = "692f4f89c355107da4929d3b";
 let activeCardId = null;   
 let chosenShiftName = "";
@@ -377,15 +437,14 @@ async function sendSwapRequest() {
     setPendingState(activeCardId);
     localStorage.setItem(activeCardId, 'pending');
     showToast(`Request sent to ${colleague}`);
-    
-    // API Call
     sendNotification(`Swap Request: ${chosenShiftName} -> ${colleague}`);
 }
 
 async function claimShift(id, info, owner) {
     const btn = document.querySelector(`#${id} .btn-claim`);
-    btn.innerText = "Pending";
+    btn.innerText = "Pending Approval";
     btn.disabled = true;
+    btn.style.background = "#999"; // Visual cue for disabled
     showToast("Claim sent!");
     sendNotification(`Claim Request: User wants ${info} from ${owner}`);
 }
